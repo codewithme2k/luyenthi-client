@@ -1,8 +1,10 @@
 import RegisterForm from '@/components/Auth/register-form'
 import { GraduationCap, Sparkles } from 'lucide-react'
 import { Link } from 'react-router'
+import { useRouteTitle } from '@/hooks/useRouteTitle'
 
 export default function RegisterPage() {
+  useRouteTitle()
   return (
     <div className="relative min-h-screen flex flex-col items-center justify-center bg-muted p-6 md:p-10 overflow-hidden select-none">
       

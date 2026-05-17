@@ -11,6 +11,7 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { GraduationCap, Mail, ArrowLeft, Loader2, Sparkles, CheckCircle2 } from 'lucide-react'
+import { useRouteTitle } from '@/hooks/useRouteTitle'
 
 const forgotSchema = z.object({
   email: z.string().min(1, { message: 'Email không được để trống!' }).email({ message: 'Email không hợp lệ!' })
@@ -19,6 +20,7 @@ const forgotSchema = z.object({
 type ForgotFormValues = z.infer<typeof forgotSchema>
 
 export default function ForgotPasswordPage() {
+  useRouteTitle()
   const [isSubmit, setIsSubmit] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [submittedEmail, setSubmittedEmail] = useState('')

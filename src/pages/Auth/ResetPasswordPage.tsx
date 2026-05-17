@@ -11,6 +11,7 @@ import { Field, FieldGroup, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { GraduationCap, Lock, Eye, EyeOff, Loader2, Sparkles, CheckCircle2, AlertTriangle, ArrowRight } from 'lucide-react'
+import { useRouteTitle } from '@/hooks/useRouteTitle'
 
 const resetSchema = z.object({
   password: z
@@ -26,6 +27,7 @@ const resetSchema = z.object({
 type ResetFormValues = z.infer<typeof resetSchema>
 
 export default function ResetPasswordPage() {
+  useRouteTitle()
   const navigate = useNavigate()
   const location = useLocation()
   const params = new URLSearchParams(location.search)

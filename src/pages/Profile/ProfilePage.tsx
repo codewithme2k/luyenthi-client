@@ -403,7 +403,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="container max-w-5xl mx-auto py-10 px-4 sm:px-6">
+    <div className="container max-w-7xl mx-auto py-10 px-4 sm:px-6">
       <div className="mb-8">
         <h1 className="text-3xl font-heading font-bold text-foreground">Hồ Sơ Cá Nhân</h1>
         <p className="text-muted-foreground mt-2">Quản lý thông tin tài khoản và xem lịch sử các bài thi bạn đã hoàn thành.</p>

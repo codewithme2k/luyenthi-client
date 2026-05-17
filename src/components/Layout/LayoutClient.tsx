@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router'
 import Header from '@/components/Header/Header'
+import { Footer } from '@/components/Footer/Footer'
 
 const LayoutClient = () => {
   const location = useLocation()
@@ -18,6 +19,7 @@ const LayoutClient = () => {
       <main className="flex-grow">
         <Outlet />
       </main>
+      <Footer/>
     </div>
   )
 }

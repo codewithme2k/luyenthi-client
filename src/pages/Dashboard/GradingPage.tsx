@@ -153,7 +153,7 @@ export const GradingPage = () => {
             {isLoadingDetails ? (
               <div className="py-20 flex justify-center h-full items-center"><Loading /></div>
             ) : selectedSession ? (
-              <div className="space-y-4 max-w-5xl mx-auto">
+              <div className="space-y-4 max-w-7xl mx-auto">
                 {selectedSession.userAnswers.map((answer: any, index: number) => {
                   const q = answer.question;
                   const isPending = q.type === 'ESSAY' && answer.isCorrect === null;

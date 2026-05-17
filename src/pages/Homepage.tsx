@@ -19,7 +19,7 @@ const HomePage: React.FC = () => {
       <div className="absolute bottom-[20%] right-[-10%] w-[40%] h-[40%] bg-violet-600/5 rounded-full blur-[100px] pointer-events-none -z-10" />
 
       {/* Hero Section */}
-      <section className="container mx-auto px-6 pt-20 pb-16 text-center max-w-5xl animate-fade-in">
+      <section className="container mx-auto px-6 pt-20 pb-16 text-center max-w-7xl animate-fade-in">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-semibold mb-6 border border-primary/20 backdrop-blur-md">
           <Sparkles className="w-3.5 h-3.5 animate-spin-slow" />
           <span>Học Tập Thông Minh - Đạt Điểm Số Cao</span>
@@ -119,7 +119,7 @@ const HomePage: React.FC = () => {
       </section>
 
       {/* Category Overview Section */}
-      <section className="container mx-auto px-6 max-w-5xl py-12">
+      <section className="container mx-auto px-6 max-w-7xl py-12">
         <div className="glass p-8 rounded-3xl border border-border/60 flex flex-col md:flex-row items-center justify-between gap-8 bg-gradient-to-br from-primary/5 via-violet-500/5 to-transparent">
           <div className="space-y-4 text-center md:text-left max-w-md">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-violet-500/10 text-violet-600 text-xs font-semibold border border-violet-500/20">

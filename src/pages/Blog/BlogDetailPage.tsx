@@ -235,7 +235,7 @@ export const BlogDetailPage: React.FC = () => {
       <div className="absolute bottom-[20%] right-[-10%] w-[50%] h-[50%] bg-violet-600/5 rounded-full blur-[120px] pointer-events-none -z-10" />
 
       {/* Main Container - EXPANDED WIDTH TO 5XL */}
-      <div className="container mx-auto px-6 max-w-5xl pt-10 relative">
+      <div className="container mx-auto px-6 max-w-7xl pt-10 relative">
         
         {/* Navigation Breadcrumb */}
         <div className="mb-8 animate-fade-in shrink-0">

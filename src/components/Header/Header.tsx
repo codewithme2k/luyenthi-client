@@ -4,6 +4,7 @@ import { Navigation } from "./Navigation";
 import { SearchInput } from "./SearchInput";
 import { UserActions } from "./UserActions";
 import { MobileMenu } from "./MobileMenu";
+import { ModeToggle } from "@/components/mode-toggle";
 
 export const Header: React.FC = () => {
   return (
@@ -25,6 +26,8 @@ export const Header: React.FC = () => {
           {/* User Auth Buttons / Profile Menu */}
           <UserActions />
 
+          <ModeToggle />
+    
           {/* Mobile Drawer Menu Toggle */}
           <MobileMenu />
         </div>

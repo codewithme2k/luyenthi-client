@@ -14,7 +14,11 @@ import {
   ArrowRight,
   Tv,
   FileText,
-  HelpCircle
+  HelpCircle,
+  CheckCircle2,
+  Clipboard,
+  PanelRightClose,
+  PanelRightOpen
 } from "lucide-react";
 import { toast } from "sonner";
 import Loading from "@/components/Layout/Loading";
@@ -54,8 +58,112 @@ export const CoursePlayerPage: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [activeLesson, setActiveLesson] = useState<ILesson | null>(null);
   const [expandedChapters, setExpandedChapters] = useState<Record<string, boolean>>({});
-  const [activeTab, setActiveTab] = useState<"video" | "info">("video");
+  const [activeTab, setActiveTab] = useState<"video" | "info" | "notes">("video");
   const [playerMode, setPlayerMode] = useState<"video" | "doc">("video");
+  const [completedLessons, setCompletedLessons] = useState<string[]>([]);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [notesText, setNotesText] = useState("");
+
+  // Load lesson notes when active lesson changes
+  useEffect(() => {
+    if (activeLesson) {
+      const stored = localStorage.getItem("luyenthi-lesson-notes");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored) as Record<string, string>;
+          setNotesText(parsed[activeLesson.id] || "");
+        } catch (e) {
+          console.error(e);
+        }
+      } else {
+        setNotesText("");
+      }
+    }
+  }, [activeLesson]);
+
+  // Handle saving notes
+  const handleSaveNotes = (text: string) => {
+    if (!activeLesson) return;
+    setNotesText(text);
+
+    const stored = localStorage.getItem("luyenthi-lesson-notes");
+    let notesMap: Record<string, string> = {};
+    if (stored) {
+      try {
+        notesMap = JSON.parse(stored);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    notesMap[activeLesson.id] = text;
+    localStorage.setItem("luyenthi-lesson-notes", JSON.stringify(notesMap));
+  };
+
+  // Export notes to txt file
+  const downloadNotes = () => {
+    if (!activeLesson || !notesText.trim()) return;
+    const element = document.createElement("a");
+    const file = new Blob([
+      `GHI CHÚ HỌC TẬP - LUYỆN THI PRO\n`,
+      `Khóa học: ${course?.title}\n`,
+      `Bài học: ${activeLesson.title}\n`,
+      `Ngày tạo: ${new Date().toLocaleDateString("vi-VN")}\n`,
+      `-------------------------------------------\n\n`,
+      notesText
+    ], { type: "text/plain;charset=utf-8" });
+    element.href = URL.createObjectURL(file);
+    element.download = `GhiChu_${activeLesson.title.replace(/\s+/g, "_")}.txt`;
+    document.body.appendChild(element);
+    element.click();
+    document.body.removeChild(element);
+    toast.success("Đã xuất file ghi chú thành công!");
+  };
+
+  // Load completed lessons from LocalStorage when course details load
+  useEffect(() => {
+    if (course) {
+      const stored = localStorage.getItem("luyenthi-watched-progress");
+      if (stored) {
+        try {
+          const parsed = JSON.parse(stored) as Record<string, string[]>;
+          if (parsed[course.slug]) {
+            setCompletedLessons(parsed[course.slug]);
+          }
+        } catch (e) {
+          console.error("Error reading watched progress:", e);
+        }
+      }
+    }
+  }, [course]);
+
+  // Toggle lesson completion state
+  const toggleLessonCompletion = (lessonId: string) => {
+    if (!course) return;
+    
+    let updated: string[];
+    if (completedLessons.includes(lessonId)) {
+      updated = completedLessons.filter(id => id !== lessonId);
+      toast.success("Đã hủy đánh dấu hoàn thành bài học.");
+    } else {
+      updated = [...completedLessons, lessonId];
+      toast.success("Chúc mừng! Bạn đã hoàn thành bài học này. 🎉");
+    }
+    
+    setCompletedLessons(updated);
+    
+    // Save to LocalStorage
+    const stored = localStorage.getItem("luyenthi-watched-progress");
+    let progressMap: Record<string, string[]> = {};
+    if (stored) {
+      try {
+        progressMap = JSON.parse(stored);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+    progressMap[course.slug] = updated;
+    localStorage.setItem("luyenthi-watched-progress", JSON.stringify(progressMap));
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -67,21 +175,56 @@ export const CoursePlayerPage: React.FC = () => {
           const courseData = res.data.data as ICourseDetails;
           setCourse(courseData);
 
-          // Find first lesson to auto-select
-          let firstLesson: ILesson | null = null;
+          // Load completed lessons from LocalStorage synchronously
+          let completedIds: string[] = [];
+          const stored = localStorage.getItem("luyenthi-watched-progress");
+          if (stored) {
+            try {
+              const parsed = JSON.parse(stored) as Record<string, string[]>;
+              if (parsed[courseData.slug]) {
+                completedIds = parsed[courseData.slug];
+              }
+            } catch (e) {
+              console.error("Error reading watched progress:", e);
+            }
+          }
+          setCompletedLessons(completedIds);
+
+          // Find first UNWATCHED lesson to auto-select
+          let targetLesson: ILesson | null = null;
+          let targetChapterId: string | null = null;
           const initialExpanded: Record<string, boolean> = {};
 
           if (courseData.chapters && courseData.chapters.length > 0) {
-            courseData.chapters.forEach((ch, index) => {
-              initialExpanded[ch.id] = index === 0; // expand first chapter by default
-              if (index === 0 && ch.lessons && ch.lessons.length > 0) {
-                firstLesson = ch.lessons[0];
-              }
+            // Flatten all lessons
+            const flat: { lesson: ILesson; chapterId: string }[] = [];
+            courseData.chapters.forEach((ch) => {
+              ch.lessons.forEach((l) => {
+                flat.push({ lesson: l, chapterId: ch.id });
+              });
+            });
+
+            // Find first unwatched lesson
+            const firstUnwatched = flat.find(item => !completedIds.includes(item.lesson.id));
+
+            if (firstUnwatched) {
+              targetLesson = firstUnwatched.lesson;
+              targetChapterId = firstUnwatched.chapterId;
+            } else if (flat.length > 0) {
+              // If all lessons are already watched, default to the first lesson
+              targetLesson = flat[0].lesson;
+              targetChapterId = flat[0].chapterId;
+            }
+
+            // Expand only the chapter containing the active lesson
+            courseData.chapters.forEach((ch) => {
+              initialExpanded[ch.id] = targetChapterId ? ch.id === targetChapterId : false;
             });
           }
+
           setExpandedChapters(initialExpanded);
-          if (firstLesson) {
-            setActiveLesson(firstLesson);
+          if (targetLesson) {
+            setActiveLesson(targetLesson);
           }
         }
       } catch (err) {
@@ -203,14 +346,36 @@ export const CoursePlayerPage: React.FC = () => {
           </div>
         </div>
 
-        {course.isPremium && !user?.isPremium && (
-          <Link to="/premium">
-            <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-extrabold text-xs rounded-xl shadow-md flex items-center gap-1">
-              <Crown className="w-3.5 h-3.5 fill-current" />
-              <span>Nâng Cấp Premium</span>
-            </Button>
-          </Link>
-        )}
+        <div className="flex items-center gap-3">
+          {/* Collapsible Sidebar Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+            className="hidden lg:flex items-center gap-1.5 rounded-xl border-border font-bold text-xs h-9 cursor-pointer hover:bg-muted/50 transition-all"
+          >
+            {isSidebarCollapsed ? (
+              <>
+                <PanelRightOpen className="w-4 h-4 text-primary animate-pulse" />
+                <span>Hiện giáo trình</span>
+              </>
+            ) : (
+              <>
+                <PanelRightClose className="w-4 h-4 text-muted-foreground" />
+                <span>Ẩn giáo trình</span>
+              </>
+            )}
+          </Button>
+
+          {course.isPremium && !user?.isPremium && (
+            <Link to="/premium">
+              <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-amber-950 font-extrabold text-xs h-9 rounded-xl shadow-md flex items-center gap-1">
+                <Crown className="w-3.5 h-3.5 fill-current" />
+                <span>Nâng Cấp Premium</span>
+              </Button>
+            </Link>
+          )}
+        </div>
       </div>
 
       {/* Main split player layout */}
@@ -324,7 +489,7 @@ export const CoursePlayerPage: React.FC = () => {
           </div>
 
           {/* Next / Prev Quick Controls */}
-          <div className="flex items-center justify-between border-b border-border/80 pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-4 border-b border-border/80 pb-4">
             <Button
               variant="outline"
               size="sm"
@@ -334,7 +499,24 @@ export const CoursePlayerPage: React.FC = () => {
             >
               <ArrowLeft className="w-4 h-4 mr-1.5" /> Bài trước
             </Button>
-            <span className="text-xs font-bold text-muted-foreground">
+
+            {activeLesson && (
+              <Button
+                variant={completedLessons.includes(activeLesson.id) ? "default" : "outline"}
+                size="sm"
+                onClick={() => toggleLessonCompletion(activeLesson.id)}
+                className={`rounded-xl font-bold text-xs cursor-pointer transition-all duration-300 ${
+                  completedLessons.includes(activeLesson.id)
+                    ? "bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 hover:text-white shadow-md shadow-emerald-600/10"
+                    : "border-border hover:bg-emerald-500/10 hover:text-emerald-600 hover:border-emerald-500/30"
+                }`}
+              >
+                <CheckCircle2 className={`w-4 h-4 mr-1.5 ${completedLessons.includes(activeLesson.id) ? "fill-white text-emerald-600" : ""}`} />
+                <span>{completedLessons.includes(activeLesson.id) ? "Đã Hoàn Thành" : "Đánh Dấu Hoàn Thành"}</span>
+              </Button>
+            )}
+
+            <span className="text-xs font-bold text-muted-foreground hidden sm:inline-block">
               Bài {activeIndex + 1} / {flatLessons.length}
             </span>
             <Button
@@ -348,11 +530,11 @@ export const CoursePlayerPage: React.FC = () => {
             </Button>
           </div>
 
-          {/* Tabs header: Content / Info */}
-          <div className="flex gap-2 border-b border-border pb-px">
+          {/* Tabs header: Content / Info / Notes */}
+          <div className="flex gap-2 border-b border-border pb-px overflow-x-auto scrollbar-none">
             <button
               onClick={() => setActiveTab("video")}
-              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer ${
+              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${
                 activeTab === "video"
                   ? "border-primary text-primary"
                   : "border-transparent text-muted-foreground hover:text-foreground"
@@ -363,10 +545,22 @@ export const CoursePlayerPage: React.FC = () => {
               </span>
             </button>
             <button
+              onClick={() => setActiveTab("notes")}
+              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${
+                activeTab === "notes"
+                  ? "border-primary text-primary"
+                  : "border-transparent text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              <span className="flex items-center gap-1.5">
+                <Clipboard className="w-4 h-4" /> Sổ Tay Ghi Chú
+              </span>
+            </button>
+            <button
               onClick={() => setActiveTab("info")}
-              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer ${
+              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${
                 activeTab === "info"
-                  ? "border-transparent text-primary" // style toggle placeholder
+                  ? "border-primary text-primary"
                   : "border-transparent text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -398,6 +592,36 @@ export const CoursePlayerPage: React.FC = () => {
                   )}
                 </div>
               </div>
+            ) : activeTab === "notes" && activeLesson ? (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h3 className="text-sm font-extrabold text-foreground flex items-center gap-1.5 leading-none">
+                    <Clipboard className="w-4 h-4 text-indigo-500" /> Ghi chú học tập
+                  </h3>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={downloadNotes}
+                    disabled={!notesText.trim()}
+                    className="rounded-xl text-[10px] h-7 px-3.5 font-bold border-border/80 hover:bg-indigo-500/10 hover:text-indigo-500 cursor-pointer"
+                  >
+                    Tải File Ghi Chú (.txt)
+                  </Button>
+                </div>
+                <textarea
+                  value={notesText}
+                  onChange={(e) => handleSaveNotes(e.target.value)}
+                  placeholder="Ghi nhanh công thức, từ vựng hoặc kiến thức cốt lõi của bài học này tại đây... Hệ thống sẽ tự động lưu lại cho bạn!"
+                  className="w-full h-40 rounded-2xl bg-background/50 border border-border/80 p-3.5 text-xs font-semibold leading-relaxed focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-muted-foreground/60 resize-none shadow-inner"
+                />
+                <div className="text-[10px] font-semibold text-muted-foreground flex items-center gap-1.5">
+                  <span className="relative flex h-1.5 w-1.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500"></span>
+                  </span>
+                  <span>Đã tự động lưu ghi chú</span>
+                </div>
+              </div>
             ) : (
               <div>
                 <h3 className="text-base font-bold text-foreground">Về Khoá Học</h3>
@@ -410,11 +634,30 @@ export const CoursePlayerPage: React.FC = () => {
         </div>
 
         {/* Right Side: Syllabus Navigation Sidebar */}
-        <div className="w-full lg:w-[340px] border-t lg:border-t-0 lg:border-l border-border bg-card flex flex-col h-full">
+        {!isSidebarCollapsed && (
+          <div className="w-full lg:w-[340px] border-t lg:border-t-0 lg:border-l border-border bg-card flex flex-col h-full transition-all duration-300 animate-in slide-in-from-right">
           <div className="p-4 border-b border-border bg-card/65 backdrop-blur-xs">
             <h3 className="text-xs font-extrabold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
               <BookOpen className="w-4 h-4 text-primary" /> Giáo trình khoá học
             </h3>
+            
+            {/* Elegant Progress Bar */}
+            {flatLessons.length > 0 && (
+              <div className="mt-3 bg-muted/40 rounded-xl p-3 border border-border/50">
+                <div className="flex items-center justify-between text-[10px] font-bold text-muted-foreground mb-1.5">
+                  <span>Tiến độ học tập</span>
+                  <span className="text-primary font-black">
+                    {Math.round((completedLessons.length / flatLessons.length) * 100)}% ({completedLessons.length}/{flatLessons.length})
+                  </span>
+                </div>
+                <div className="w-full h-1.5 bg-muted dark:bg-neutral-800 rounded-full overflow-hidden">
+                  <div 
+                    className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500 ease-out rounded-full" 
+                    style={{ width: `${(completedLessons.length / flatLessons.length) * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="flex-1 overflow-y-auto divide-y divide-border">
@@ -453,6 +696,7 @@ export const CoursePlayerPage: React.FC = () => {
                         ch.lessons.map((lesson) => {
                           const isActive = activeLesson?.id === lesson.id;
                           const lessonLocked = !lesson.isFree && !hasAccess;
+                          const isDone = completedLessons.includes(lesson.id);
 
                           return (
                             <button
@@ -467,15 +711,17 @@ export const CoursePlayerPage: React.FC = () => {
                               <div className="flex items-start gap-2.5 flex-1 min-w-0">
                                 {lessonLocked ? (
                                   <Lock className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5" />
+                                ) : isDone ? (
+                                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5 fill-emerald-500/10" />
                                 ) : (
                                   <Play className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${isActive ? "text-primary animate-pulse" : "text-muted-foreground/60"}`} />
                                 )}
-                                <span className={`text-xs font-bold leading-tight truncate ${isActive ? "font-extrabold" : ""}`}>
+                                <span className={`text-xs font-bold leading-tight truncate ${isActive ? "font-extrabold" : ""} ${isDone ? "text-muted-foreground/60 line-through decoration-muted-foreground/45 font-medium" : ""}`}>
                                   {lesson.title}
                                 </span>
                               </div>
 
-                              {lesson.isFree && !isActive && (
+                              {lesson.isFree && !isActive && !isDone && (
                                 <span className="text-[9px] font-black uppercase text-violet-500 bg-violet-500/10 px-1.5 py-0.2 rounded border border-violet-500/20 leading-none">
                                   Học thử
                                 </span>
@@ -491,6 +737,7 @@ export const CoursePlayerPage: React.FC = () => {
             })}
           </div>
         </div>
+      )}
       </div>
     </div>
   );

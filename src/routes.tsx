@@ -36,19 +36,23 @@ import { SyllabusBuilderPage } from '@/pages/Dashboard/SyllabusBuilderPage'
 const routes = createBrowserRouter([
   {
     path: '/login',
-    element: <LoginPage />
+    element: <LoginPage />,
+    handle: { title: 'Đăng nhập' }
   },
   {
     path: '/register',
-    element: <RegisterPage />
+    element: <RegisterPage />,
+    handle: { title: 'Đăng ký tài khoản' }
   },
   {
     path: '/forgot-password',
-    element: <ForgotPasswordPage />
+    element: <ForgotPasswordPage />,
+    handle: { title: 'Quên mật khẩu' }
   },
   {
     path: '/reset-password',
-    element: <ResetPasswordPage />
+    element: <ResetPasswordPage />,
+    handle: { title: 'Đặt lại mật khẩu' }
   },
   {
     path: '/',
@@ -61,54 +65,66 @@ const routes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <HomePage />
+        element: <HomePage />,
+        handle: { title: 'Trang chủ' }
       },
       {
         path: 'exams',
-        element: <UserExamPage />
+        element: <UserExamPage />,
+        handle: { title: 'Danh sách đề thi' }
       },
       {
         path: 'leaderboard',
-        element: <LeaderboardPage />
+        element: <LeaderboardPage />,
+        handle: { title: 'Bảng xếp hạng' }
       },
       {
         path: 'blog',
-        element: <BlogPage />
+        element: <BlogPage />,
+        handle: { title: 'Cẩm nang học tập' }
       },
       {
         path: 'blog/:slug',
-        element: <BlogDetailPage />
+        element: <BlogDetailPage />,
+        handle: { title: 'Chi tiết bài viết' }
       },
       {
         path: 'courses',
-        element: <CoursePage />
+        element: <CoursePage />,
+        handle: { title: 'Khóa học online' }
       },
       {
         path: 'course/:slug',
-        element: <CoursePlayerPage />
+        element: <CoursePlayerPage />,
+        handle: { title: 'Khóa học' }
       },
       {
         element: <RequireAuth />,
         children: [
           {
             path: 'exam/:slug',
-            element: <ExamTestPage />
+            element: <ExamTestPage />,
+            handle: { title: 'Luyện thi' }
           },
           {
             path: 'exam-result/:sessionId',
-            element: <ExamResultDetailsPage />
+            element: <ExamResultDetailsPage />,
+            handle: { title: 'Kết quả thi' }
           },
           {
             path: 'user',
-            element: <UserPage />
+            element: <UserPage />,
+            handle: { title: 'Quản lý tài khoản' }
           },
           {
             path: 'profile',
-            element: <ProfilePage />
+            element: <ProfilePage />,
+            handle: { title: 'Hồ sơ cá nhân' }
           },
           {
             path: 'premium',
-            element: <PremiumPage />
+            element: <PremiumPage />,
+            handle: { title: 'Nâng cấp Premium' }
           }
         ]
       }
@@ -125,49 +141,60 @@ const routes = createBrowserRouter([
     children: [
       {
         index: true,
-        element: <Dashboard />
+        element: <Dashboard />,
+        handle: { title: 'Trang quản trị' }
       },
       {
         path: 'user',
-        element: <UserPage />
+        element: <UserPage />,
+        handle: { title: 'Quản lý người dùng' }
       },
       {
         path: 'category',
-        element: <CategoryPage />
+        element: <CategoryPage />,
+        handle: { title: 'Quản lý danh mục' }
       },
       {
         path: 'exam',
-        element: <ExamPage />
+        element: <ExamPage />,
+        handle: { title: 'Quản lý đề thi' }
       },
       {
         path: 'post',
-        element: <PostPage />
+        element: <PostPage />,
+        handle: { title: 'Quản lý bài viết' }
       },
       {
         path: 'question',
-        element: <QuestionPage />
+        element: <QuestionPage />,
+        handle: { title: 'Quản lý câu hỏi' }
       },
       {
         path: 'grading',
-        element: <GradingPage />
+        element: <GradingPage />,
+        handle: { title: 'Chấm thi' }
       },
       {
         path: 'membership-request',
-        element: <AdminMembershipPage />
+        element: <AdminMembershipPage />,
+        handle: { title: 'Yêu cầu kích hoạt thành viên' }
       },
       {
         path: 'course',
-        element: <AdminCoursePage />
+        element: <AdminCoursePage />,
+        handle: { title: 'Quản lý khóa học' }
       },
       {
         path: 'course/:id/syllabus',
-        element: <SyllabusBuilderPage />
+        element: <SyllabusBuilderPage />,
+        handle: { title: 'Xây dựng giáo trình' }
       }
     ]
   },
   {
     path: '*',
-    element: <NotFound />
+    element: <NotFound />,
+    handle: { title: '404 - Không tìm thấy trang' }
   }
 ])
 export default routes

@@ -128,7 +128,7 @@ const UserExamPage: React.FC = () => {
       </section>
 
       {/* Floating Search & Category Filter Panel */}
-      <section className="container mx-auto px-6 max-w-5xl mb-10">
+      <section className="container mx-auto px-6 max-w-7xl mb-10">
         <div className="glass p-6 rounded-2xl shadow-xl flex flex-col md:flex-row gap-4 items-center">
           {/* Search Box */}
           <div className="relative w-full md:w-80 shrink-0">

@@ -2,8 +2,10 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "./AppSidebar"
 import { Outlet } from "react-router"
 import { TooltipProvider } from "@/components/ui/tooltip"
+import { useRouteTitle } from "@/hooks/useRouteTitle"
 
 export default function LayoutAdmin() {
+  useRouteTitle()
   return (
     <TooltipProvider>
       <SidebarProvider>

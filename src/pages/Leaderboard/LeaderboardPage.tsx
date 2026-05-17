@@ -131,7 +131,7 @@ export default function LeaderboardPage() {
 
   if (loading) {
     return (
-      <div className="container max-w-5xl mx-auto py-10 px-4 space-y-8 animate-pulse">
+      <div className="container max-w-7xl mx-auto py-10 px-4 space-y-8 animate-pulse">
         <div className="h-28 bg-muted rounded-2xl w-full" />
         <div className="grid grid-cols-3 gap-6 h-80 bg-muted/40 rounded-2xl p-6" />
         <div className="h-96 bg-muted rounded-2xl" />
@@ -140,7 +140,7 @@ export default function LeaderboardPage() {
   }
 
   return (
-    <div className="container max-w-5xl mx-auto py-10 px-4 sm:px-6 space-y-8 page-bg">
+    <div className="container max-w-7xl mx-auto py-10 px-4 sm:px-6 space-y-8 page-bg">
       
       {/* 1. Header Hero Banner */}
       <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-amber-500/10 via-primary/5 to-background border border-amber-500/20 p-6 md:p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 shadow-xs">
