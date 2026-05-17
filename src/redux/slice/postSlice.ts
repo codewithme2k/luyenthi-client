@@ -1,42 +1,43 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import {
-  callFetchUser,
-  callCreateUser,
-  callUpdateUser,
-  callDeleteUser,
+  callFetchPost,
+  callCreatePost,
+  callUpdatePost,
+  callDeletePost,
 } from "@/config/api";
-import type { IUser, ICreateUser } from "@/types/backend";
+import type { IPost } from "@/types/backend";
+
 /* =====================
    Thunk
 ===================== */
-export const fetchUser = createAsyncThunk(
-  "user/fetchUser",
-  async ({ query }: { query: string }) => {
-    const res = await callFetchUser(query);
+export const fetchPost = createAsyncThunk(
+  "post/fetchPost",
+  async ({ query }: { query?: string }) => {
+    const res = await callFetchPost(query);
     return res.data;
   }
 );
 
-export const createUser = createAsyncThunk(
-  "user/createUser",
-  async (user: ICreateUser) => {
-    const res = await callCreateUser(user);
+export const createPost = createAsyncThunk(
+  "post/createPost",
+  async (post: Partial<IPost>) => {
+    const res = await callCreatePost(post);
     return res.data;
   }
 );
 
-export const updateUser = createAsyncThunk(
-  "user/updateUser",
-  async ({ user, id }: { user: IUser; id: string }) => {
-    const res = await callUpdateUser(user, id);
+export const updatePost = createAsyncThunk(
+  "post/updatePost",
+  async ({ post, id }: { post: Partial<IPost>; id: string }) => {
+    const res = await callUpdatePost(post, id);
     return res.data;
   }
 );
 
-export const deleteUser = createAsyncThunk(
-  "user/deleteUser",
+export const deletePost = createAsyncThunk(
+  "post/deletePost",
   async ({ id }: { id: string }) => {
-    const res = await callDeleteUser(id);
+    const res = await callDeletePost(id);
     return res.data;
   }
 );
@@ -51,7 +52,7 @@ interface IState {
     page: number;
     total: number;
   };
-  data: IUser[];
+  data: IPost[];
 }
 
 const initialState: IState = {
@@ -67,23 +68,23 @@ const initialState: IState = {
 /* =====================
    Slice
 ===================== */
-const userSlice = createSlice({
-  name: "user",
+const postSlice = createSlice({
+  name: "post",
   initialState,
   reducers: {},
 
   extraReducers: (builder) => {
     builder
-      .addCase(fetchUser.pending, (state) => {
+      .addCase(fetchPost.pending, (state) => {
         state.isFetching = true;
       })
-      .addCase(fetchUser.rejected, (state) => {
+      .addCase(fetchPost.rejected, (state) => {
         state.isFetching = false;
       })
-      .addCase(fetchUser.fulfilled, (state, action) => {
+      .addCase(fetchPost.fulfilled, (state, action) => {
         state.isFetching = false;
         const payload = action.payload;
-        if (payload.success && payload.data) {
+        if (payload?.success && payload.data) {
           state.data = payload.data;
           if (payload.meta) {
             state.meta = payload.meta;
@@ -94,51 +95,51 @@ const userSlice = createSlice({
         }
       })
 
-      .addCase(createUser.pending, (state) => {
+      .addCase(createPost.pending, (state) => {
         state.isFetching = true;
       })
-      .addCase(createUser.fulfilled, (state, action) => {
+      .addCase(createPost.fulfilled, (state, action) => {
         state.isFetching = false;
         const payload = action.payload;
-        if (payload.success && payload.data) {
+        if (payload?.success && payload.data) {
           state.data.unshift(payload.data);
         }
       })
-      .addCase(createUser.rejected, (state) => {
+      .addCase(createPost.rejected, (state) => {
         state.isFetching = false;
       })
 
-      .addCase(updateUser.pending, (state) => {
+      .addCase(updatePost.pending, (state) => {
         state.isFetching = true;
       })
-      .addCase(updateUser.fulfilled, (state, action) => {
+      .addCase(updatePost.fulfilled, (state, action) => {
         state.isFetching = false;
         const payload = action.payload;
-        if (payload.success && payload.data) {
-          const index = state.data.findIndex((u) => u.id === payload.data?.id);
+        if (payload?.success && payload.data) {
+          const index = state.data.findIndex((p) => p.id === payload.data?.id);
           if (index !== -1) {
             state.data[index] = payload.data;
           }
         }
       })
-      .addCase(updateUser.rejected, (state) => {
+      .addCase(updatePost.rejected, (state) => {
         state.isFetching = false;
       })
 
-      .addCase(deleteUser.pending, (state) => {
+      .addCase(deletePost.pending, (state) => {
         state.isFetching = true;
       })
-      .addCase(deleteUser.fulfilled, (state, action) => {
+      .addCase(deletePost.fulfilled, (state, action) => {
         state.isFetching = false;
-        if (action.payload.success) {
+        if (action.payload?.success) {
           const deletedId = action.meta.arg.id;
-          state.data = state.data.filter((u) => u.id !== deletedId);
+          state.data = state.data.filter((p) => p.id !== deletedId);
         }
       })
-      .addCase(deleteUser.rejected, (state) => {
+      .addCase(deletePost.rejected, (state) => {
         state.isFetching = false;
       });
   },
 });
 
-export default userSlice.reducer;
+export default postSlice.reducer;

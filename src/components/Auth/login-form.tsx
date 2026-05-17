@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router' // Dùng useNavigate và Link thay vì href
-import { useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
 import { callLogin } from '@/config/api'
-import { useAppSelector } from '@/redux/hooks'
-import { setUserLoginInfo } from '@/redux/slice/accountSlice'
+import { useAppSelector, useAppDispatch } from '@/redux/hooks'
+import { fetchAccount } from '@/redux/slice/accountSlice'
 import { getAxiosErrorMessage } from '@/config/getAxiosErrorMessage'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from '@/components/ui/field'
@@ -26,7 +25,7 @@ const formSchema = z.object({
 type LoginFormValues = z.infer<typeof formSchema>
 
 const LoginForm = () => {
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const isAuthenticated = useAppSelector((state) => state.account.isAuthenticated)
   const [isSubmit, setIsSubmit] = useState(false)
@@ -60,10 +59,12 @@ const LoginForm = () => {
       const backendRes = res.data
 
       if (backendRes.success && backendRes.data) {
-        const { accessToken, user } = backendRes.data
+        const { accessToken } = backendRes.data
 
         localStorage.setItem('accessToken', accessToken)
-        dispatch(setUserLoginInfo(user))
+        
+        // Fetch real user info from profile API now that we have the token
+        await dispatch(fetchAccount())
 
         toast.success('Đăng nhập thành công!')
 

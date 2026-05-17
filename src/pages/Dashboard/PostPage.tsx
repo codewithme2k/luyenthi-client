@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { fetchUser, createUser, updateUser, deleteUser } from "@/redux/slice/userSlice";
+import { fetchPost, createPost, updatePost, deletePost } from "@/redux/slice/postSlice";
 import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -40,60 +40,51 @@ import { Label } from "@/components/ui/label";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import Loading from "@/components/Layout/Loading";
-import type { IUser, ICreateUser } from "@/types/backend";
+import type { IPost } from "@/types/backend";
 import { Edit, Trash2, Plus, Search } from "lucide-react";
 
 interface IProps {
   open: boolean;
   setOpen: (v: boolean) => void;
-  dataUpdate: IUser | null;
-  setDataUpdate: (v: IUser | null) => void;
+  dataUpdate: IPost | null;
+  setDataUpdate: (v: IPost | null) => void;
   onSuccess: () => void;
 }
 
-const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: IProps) => {
-  const { register, handleSubmit, reset } = useForm<ICreateUser>();
+const PostFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: IProps) => {
+  const { register, handleSubmit, reset } = useForm<Partial<IPost>>();
   const dispatch = useAppDispatch();
-  const { isFetching } = useAppSelector((state) => state.user);
+  const { isFetching } = useAppSelector((state) => state.post);
 
   useEffect(() => {
     if (dataUpdate) {
-      reset({
-        name: dataUpdate.name,
-        email: dataUpdate.email,
-        age: dataUpdate.age,
-        gender: dataUpdate.gender,
-        address: dataUpdate.address,
-        contactNo: dataUpdate.contactNo
-      });
+      reset(dataUpdate);
     } else {
       reset({
-        name: "",
-        email: "",
-        password: "",
-        age: 0,
-        gender: "",
-        address: "",
-        contactNo: ""
+        title: "",
+        slug: "",
+        content: "",
+        authorId: "",
+        isPublished: false
       });
     }
   }, [dataUpdate, reset, open]);
 
-  const onSubmit = async (data: ICreateUser) => {
+  const onSubmit = async (data: Partial<IPost>) => {
     try {
       if (dataUpdate) {
-        await dispatch(updateUser({ user: data as any, id: dataUpdate.id })).unwrap();
-        toast.success("User updated successfully");
+        await dispatch(updatePost({ post: data, id: dataUpdate.id })).unwrap();
+        toast.success("Post updated successfully");
       } else {
-        await dispatch(createUser(data)).unwrap();
-        toast.success("User created successfully");
+        await dispatch(createPost(data)).unwrap();
+        toast.success("Post created successfully");
       }
       setOpen(false);
       setDataUpdate(null);
       reset();
       onSuccess();
     } catch {
-      toast.error(dataUpdate ? "Failed to update user" : "Failed to create user");
+      toast.error(dataUpdate ? "Failed to update post" : "Failed to create post");
     }
   };
 
@@ -104,41 +95,27 @@ const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
     }}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{dataUpdate ? "Update User" : "Create New User"}</DialogTitle>
+          <DialogTitle>{dataUpdate ? "Update Post" : "Create New Post"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-h-[80vh] overflow-y-auto p-1">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" {...register("name", { required: true })} />
+            <Label htmlFor="title">Title</Label>
+            <Input id="title" {...register("title", { required: true })} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" {...register("email", { required: true })} />
-          </div>
-          {!dataUpdate && (
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" {...register("password", { required: true })} />
-            </div>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="age">Age</Label>
-            <Input id="age" type="number" {...register("age", { required: true, valueAsNumber: true })} />
+            <Label htmlFor="slug">Slug</Label>
+            <Input id="slug" {...register("slug", { required: true })} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="gender">Gender</Label>
-            <Input id="gender" {...register("gender", { required: true })} placeholder="Male/Female" />
+            <Label htmlFor="content">Content</Label>
+            <Input id="content" {...register("content", { required: true })} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input id="address" {...register("address", { required: true })} />
+            <Label htmlFor="authorId">Author ID</Label>
+            <Input id="authorId" {...register("authorId", { required: true })} />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="contactNo">Contact No</Label>
-            <Input id="contactNo" {...register("contactNo")} />
-          </div>
-          <Button type="submit" disabled={isFetching} className="w-full sticky bottom-0">
-            {isFetching ? "Saving..." : (dataUpdate ? "Update User" : "Create User")}
+          <Button type="submit" disabled={isFetching} className="w-full">
+            {isFetching ? "Saving..." : (dataUpdate ? "Update Post" : "Create Post")}
           </Button>
         </form>
       </DialogContent>
@@ -146,36 +123,36 @@ const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
   );
 };
 
-export default function UserPage() {
+export default function PostPage() {
   const dispatch = useAppDispatch();
-  const { data: users, isFetching, meta } = useAppSelector((state) => state.user);
+  const { data: posts, isFetching, meta } = useAppSelector((state) => state.post);
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const limit = 10;
   const totalPages = Math.ceil((meta?.total || 0) / limit);
 
   const [openModal, setOpenModal] = useState(false);
-  const [dataUpdate, setDataUpdate] = useState<IUser | null>(null);
+  const [dataUpdate, setDataUpdate] = useState<IPost | null>(null);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(fetchUser({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
+      dispatch(fetchPost({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
   }, [dispatch, page, searchTerm]);
 
-  const loadUsers = () => {
-    dispatch(fetchUser({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
+  const loadPosts = () => {
+    dispatch(fetchPost({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
   };
 
   const handleDelete = async (id: string) => {
     try {
-      await dispatch(deleteUser({ id })).unwrap();
-      toast.success("User deleted successfully");
-      loadUsers();
+      await dispatch(deletePost({ id })).unwrap();
+      toast.success("Post deleted successfully");
+      loadPosts();
     } catch {
-      toast.error("Failed to delete user");
+      toast.error("Failed to delete post");
     }
   };
 
@@ -183,21 +160,21 @@ export default function UserPage() {
     <div className="p-6 space-y-6 relative">
       {isFetching && !openModal && <Loading />}
       
-      <UserFormModal 
+      <PostFormModal 
         open={openModal} 
         setOpen={setOpenModal} 
         dataUpdate={dataUpdate}
         setDataUpdate={setDataUpdate}
-        onSuccess={loadUsers} 
+        onSuccess={loadPosts} 
       />
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">User Management</h1>
+        <h1 className="text-2xl font-bold">Post Management</h1>
         <div className="flex gap-4">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search users..."
+              placeholder="Search posts..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -210,7 +187,7 @@ export default function UserPage() {
             setDataUpdate(null);
             setOpenModal(true);
           }}>
-            <Plus className="w-4 h-4 mr-2" /> Create User
+            <Plus className="w-4 h-4 mr-2" /> Create Post
           </Button>
         </div>
       </div>
@@ -219,34 +196,36 @@ export default function UserPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Age</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Slug</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.length === 0 && !isFetching ? (
+            {posts.length === 0 && !isFetching ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  No users found.
+                <TableCell colSpan={4} className="text-center py-8 text-muted-foreground">
+                  No posts found.
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role || "USER"}</TableCell>
-                  <TableCell>{user.age}</TableCell>
+              posts.map((post) => (
+                <TableRow key={post.id}>
+                  <TableCell className="font-medium">{post.title}</TableCell>
+                  <TableCell>{post.slug}</TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded-full text-xs ${post.isPublished ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                      {post.isPublished ? "Published" : "Draft"}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => {
-                          setDataUpdate(user);
+                          setDataUpdate(post);
                           setOpenModal(true);
                         }}
                       >
@@ -263,12 +242,12 @@ export default function UserPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the user account.
+                              This action cannot be undone. This will permanently delete the post.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(user.id)}>Continue</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleDelete(post.id)}>Continue</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>

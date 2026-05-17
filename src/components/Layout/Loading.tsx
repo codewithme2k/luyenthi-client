@@ -1,5 +1,3 @@
-'use client'
-
 const Loading = () => {
   return (
     <div className='fixed inset-0 flex items-center justify-center z-50 bg-white/60 backdrop-blur-sm'>

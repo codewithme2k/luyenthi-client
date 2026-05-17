@@ -22,6 +22,10 @@ interface IState {
     email: string;
     name: string;
     role: string;
+    contactNo?: string;
+    address?: string;
+    gender?: string;
+    profileImg?: string | null;
   };
   activeMenu: string;
 }
@@ -36,6 +40,10 @@ const initialState: IState = {
     email: "",
     name: "",
     role: "",
+    contactNo: "",
+    address: "",
+    gender: "male",
+    profileImg: null,
   },
   activeMenu: "home",
 };
@@ -70,6 +78,10 @@ export const accountSlice = createSlice({
       state.isRefreshToken = action.payload?.status ?? false;
       state.errorRefreshToken = action.payload?.message ?? "";
     },
+
+    updateAccount: (state, action) => {
+      state.user = { ...state.user, ...action.payload.user };
+    },
   },
 
   extraReducers: (builder) => {
@@ -89,6 +101,10 @@ export const accountSlice = createSlice({
         state.user.email = user.email;
         state.user.name = user.name;
         state.user.role = user.role;
+        state.user.contactNo = (user as any).contactNo || "";
+        state.user.address = (user as any).address || "";
+        state.user.gender = (user as any).gender || "male";
+        state.user.profileImg = (user as any).profileImg || null;
       } else {
         state.isAuthenticated = false;
         state.isLoading = false;
@@ -108,6 +124,7 @@ export const {
   setUserLoginInfo,
   setLogoutAction,
   setRefreshTokenAction,
+  updateAccount,
 } = accountSlice.actions;
 
 export default accountSlice.reducer;

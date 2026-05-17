@@ -56,7 +56,9 @@ instance.interceptors.request.use((config) => {
   }
 
   config.headers.Accept = 'application/json'
-  config.headers['Content-Type'] = 'application/json; charset=utf-8'
+  if (!(config.data instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json; charset=utf-8'
+  }
 
   return config
 })

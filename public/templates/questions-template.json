@@ -1,0 +1,53 @@
+[
+  {
+    "content": "Ai là người đầu tiên đặt chân lên Mặt Trăng?",
+    "type": "SINGLE_CHOICE",
+    "score": 1,
+    "order": 1,
+    "explanation": "Neil Armstrong đặt chân lên Mặt Trăng vào ngày 21 tháng 7 năm 1969.",
+    "options": [
+      { "content": "Neil Armstrong", "isCorrect": true, "order": 1 },
+      { "content": "Yuri Gagarin", "isCorrect": false, "order": 2 },
+      { "content": "Buzz Aldrin", "isCorrect": false, "order": 3 },
+      { "content": "Michael Collins", "isCorrect": false, "order": 4 }
+    ]
+  },
+  {
+    "content": "Những quốc gia nào sau đây thuộc khu vực Đông Nam Á?",
+    "type": "MULTIPLE_CHOICE",
+    "score": 2,
+    "order": 2,
+    "explanation": "Việt Nam và Thái Lan ở Đông Nam Á, Nhật Bản ở Đông Á, Pháp ở Châu Âu.",
+    "options": [
+      { "content": "Việt Nam", "isCorrect": true, "order": 1 },
+      { "content": "Thái Lan", "isCorrect": true, "order": 2 },
+      { "content": "Nhật Bản", "isCorrect": false, "order": 3 },
+      { "content": "Pháp", "isCorrect": false, "order": 4 }
+    ]
+  },
+  {
+    "content": "Nước sôi ở nhiệt độ 100 độ C ở áp suất khí quyển tiêu chuẩn.",
+    "type": "TRUE_FALSE",
+    "score": 1,
+    "order": 3,
+    "explanation": "Ở điều kiện tiêu chuẩn, điểm sôi của nước nguyên chất là 100 độ C.",
+    "options": [
+      { "content": "Đúng", "isCorrect": true, "order": 1 },
+      { "content": "Sai", "isCorrect": false, "order": 2 }
+    ]
+  },
+  {
+    "content": "Hoàn thành câu sau: Trái Đất quay quanh ____.",
+    "type": "FILL_BLANK",
+    "score": 1,
+    "order": 4,
+    "explanation": "Trái Đất quay quanh Mặt Trời theo chu kỳ khoảng 365,25 ngày."
+  },
+  {
+    "content": "Trình bày suy nghĩ của em về tầm quan trọng của việc tự học.",
+    "type": "ESSAY",
+    "score": 5,
+    "order": 5,
+    "explanation": "Học sinh cần làm nổi bật tính chủ động, khả năng tự nghiên cứu và lợi ích dài hạn của việc tự học."
+  }
+]

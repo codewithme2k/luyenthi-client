@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
 import { Outlet, useLocation } from 'react-router'
+import Header from '@/components/Header/Header'
+
 const LayoutClient = () => {
-  const [searchTerm, setSearchTerm] = useState('')
   const location = useLocation()
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -12,13 +13,11 @@ const LayoutClient = () => {
   }, [location])
 
   return (
-    <div className='' ref={rootRef}>
-      {/* <Header searchTerm={searchTerm} setSearchTerm={setSearchTerm} /> */}
-      {/* <Header /> */}
-      <div className=''>
-        <Outlet context={[searchTerm, setSearchTerm]} />
-      </div>
-      {/* <Footer /> */}
+    <div className="min-h-screen flex flex-col bg-background" ref={rootRef}>
+      <Header />
+      <main className="flex-grow">
+        <Outlet />
+      </main>
     </div>
   )
 }

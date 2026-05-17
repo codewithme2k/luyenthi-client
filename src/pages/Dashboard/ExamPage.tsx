@@ -1,7 +1,15 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { fetchUser, createUser, updateUser, deleteUser } from "@/redux/slice/userSlice";
+import { fetchExam, createExam, updateExam, deleteExam } from "@/redux/slice/examSlice";
+import { fetchCategory } from "@/redux/slice/categorySlice";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import {
   Table,
   TableBody,
@@ -37,63 +45,70 @@ import {
 } from "@/components/ui/pagination";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { toast } from "sonner";
 import Loading from "@/components/Layout/Loading";
-import type { IUser, ICreateUser } from "@/types/backend";
+import type { IExam } from "@/types/backend";
 import { Edit, Trash2, Plus, Search } from "lucide-react";
 
 interface IProps {
   open: boolean;
   setOpen: (v: boolean) => void;
-  dataUpdate: IUser | null;
-  setDataUpdate: (v: IUser | null) => void;
+  dataUpdate: IExam | null;
+  setDataUpdate: (v: IExam | null) => void;
   onSuccess: () => void;
 }
 
-const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: IProps) => {
-  const { register, handleSubmit, reset } = useForm<ICreateUser>();
+const ExamFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: IProps) => {
+  const { register, handleSubmit, reset, control } = useForm<Partial<IExam>>();
   const dispatch = useAppDispatch();
-  const { isFetching } = useAppSelector((state) => state.user);
+  const { isFetching } = useAppSelector((state) => state.exam);
+  const { data: categories } = useAppSelector((state) => state.category);
+
+  useEffect(() => {
+    if (open) {
+      dispatch(fetchCategory({ query: "limit=100" }));
+    }
+  }, [dispatch, open]);
 
   useEffect(() => {
     if (dataUpdate) {
-      reset({
-        name: dataUpdate.name,
-        email: dataUpdate.email,
-        age: dataUpdate.age,
-        gender: dataUpdate.gender,
-        address: dataUpdate.address,
-        contactNo: dataUpdate.contactNo
-      });
+      reset(dataUpdate);
     } else {
       reset({
-        name: "",
-        email: "",
-        password: "",
-        age: 0,
-        gender: "",
-        address: "",
-        contactNo: ""
+        title: "",
+        slug: "",
+        categoryId: "",
+        duration: 0,
+        totalMarks: 0,
+        passMarks: 0,
+        isPublished: false
       });
     }
   }, [dataUpdate, reset, open]);
 
-  const onSubmit = async (data: ICreateUser) => {
+  const onSubmit = async (data: Partial<IExam>) => {
     try {
+      const formattedData = {
+        ...data,
+        duration: Number(data.duration),
+        totalMarks: Number(data.totalMarks),
+        passMarks: Number(data.passMarks)
+      };
+
       if (dataUpdate) {
-        await dispatch(updateUser({ user: data as any, id: dataUpdate.id })).unwrap();
-        toast.success("User updated successfully");
+        await dispatch(updateExam({ exam: formattedData, id: dataUpdate.id })).unwrap();
+        toast.success("Exam updated successfully");
       } else {
-        await dispatch(createUser(data)).unwrap();
-        toast.success("User created successfully");
+        await dispatch(createExam(formattedData)).unwrap();
+        toast.success("Exam created successfully");
       }
       setOpen(false);
       setDataUpdate(null);
       reset();
       onSuccess();
     } catch {
-      toast.error(dataUpdate ? "Failed to update user" : "Failed to create user");
+      toast.error(dataUpdate ? "Failed to update exam" : "Failed to create exam");
     }
   };
 
@@ -102,43 +117,57 @@ const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
       setOpen(v);
       if (!v) setDataUpdate(null);
     }}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>{dataUpdate ? "Update User" : "Create New User"}</DialogTitle>
+          <DialogTitle>{dataUpdate ? "Update Exam" : "Create New Exam"}</DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 max-h-[80vh] overflow-y-auto p-1">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="name">Name</Label>
-            <Input id="name" {...register("name", { required: true })} />
+            <Label htmlFor="title">Title</Label>
+            <Input id="title" {...register("title", { required: true })} />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input id="email" type="email" {...register("email", { required: true })} />
+            <Label htmlFor="slug">Slug</Label>
+            <Input id="slug" {...register("slug", { required: true })} />
           </div>
-          {!dataUpdate && (
+          <div className="space-y-2">
+            <Label htmlFor="categoryId">Category</Label>
+            <Controller
+              name="categoryId"
+              control={control}
+              rules={{ required: true }}
+              render={({ field }) => (
+                <Select onValueChange={field.onChange} value={field.value || ""}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {categories.map((category) => (
+                      <SelectItem key={category.id} value={category.id}>
+                        {category.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              )}
+            />
+          </div>
+          <div className="grid grid-cols-3 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input id="password" type="password" {...register("password", { required: true })} />
+              <Label htmlFor="duration">Duration (m)</Label>
+              <Input id="duration" type="number" {...register("duration", { required: true })} />
             </div>
-          )}
-          <div className="space-y-2">
-            <Label htmlFor="age">Age</Label>
-            <Input id="age" type="number" {...register("age", { required: true, valueAsNumber: true })} />
+            <div className="space-y-2">
+              <Label htmlFor="totalMarks">Total Marks</Label>
+              <Input id="totalMarks" type="number" {...register("totalMarks", { required: true })} />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="passMarks">Pass Marks</Label>
+              <Input id="passMarks" type="number" {...register("passMarks", { required: true })} />
+            </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="gender">Gender</Label>
-            <Input id="gender" {...register("gender", { required: true })} placeholder="Male/Female" />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="address">Address</Label>
-            <Input id="address" {...register("address", { required: true })} />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="contactNo">Contact No</Label>
-            <Input id="contactNo" {...register("contactNo")} />
-          </div>
-          <Button type="submit" disabled={isFetching} className="w-full sticky bottom-0">
-            {isFetching ? "Saving..." : (dataUpdate ? "Update User" : "Create User")}
+          <Button type="submit" disabled={isFetching} className="w-full">
+            {isFetching ? "Saving..." : (dataUpdate ? "Update Exam" : "Create Exam")}
           </Button>
         </form>
       </DialogContent>
@@ -146,36 +175,36 @@ const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
   );
 };
 
-export default function UserPage() {
+export default function ExamPage() {
   const dispatch = useAppDispatch();
-  const { data: users, isFetching, meta } = useAppSelector((state) => state.user);
+  const { data: exams, isFetching, meta } = useAppSelector((state) => state.exam);
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
   const limit = 10;
   const totalPages = Math.ceil((meta?.total || 0) / limit);
 
   const [openModal, setOpenModal] = useState(false);
-  const [dataUpdate, setDataUpdate] = useState<IUser | null>(null);
+  const [dataUpdate, setDataUpdate] = useState<IExam | null>(null);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(fetchUser({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
+      dispatch(fetchExam({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
   }, [dispatch, page, searchTerm]);
 
-  const loadUsers = () => {
-    dispatch(fetchUser({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
+  const loadExams = () => {
+    dispatch(fetchExam({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
   };
 
   const handleDelete = async (id: string) => {
     try {
-      await dispatch(deleteUser({ id })).unwrap();
-      toast.success("User deleted successfully");
-      loadUsers();
+      await dispatch(deleteExam({ id })).unwrap();
+      toast.success("Exam deleted successfully");
+      loadExams();
     } catch {
-      toast.error("Failed to delete user");
+      toast.error("Failed to delete exam");
     }
   };
 
@@ -183,21 +212,21 @@ export default function UserPage() {
     <div className="p-6 space-y-6 relative">
       {isFetching && !openModal && <Loading />}
       
-      <UserFormModal 
+      <ExamFormModal 
         open={openModal} 
         setOpen={setOpenModal} 
         dataUpdate={dataUpdate}
         setDataUpdate={setDataUpdate}
-        onSuccess={loadUsers} 
+        onSuccess={loadExams} 
       />
 
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">User Management</h1>
+        <h1 className="text-2xl font-bold">Exam Management</h1>
         <div className="flex gap-4">
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search users..."
+              placeholder="Search exams..."
               value={searchTerm}
               onChange={(e) => {
                 setSearchTerm(e.target.value);
@@ -210,7 +239,7 @@ export default function UserPage() {
             setDataUpdate(null);
             setOpenModal(true);
           }}>
-            <Plus className="w-4 h-4 mr-2" /> Create User
+            <Plus className="w-4 h-4 mr-2" /> Create Exam
           </Button>
         </div>
       </div>
@@ -219,34 +248,38 @@ export default function UserPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Name</TableHead>
-              <TableHead>Email</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Age</TableHead>
+              <TableHead>Title</TableHead>
+              <TableHead>Category</TableHead>
+              <TableHead>Duration</TableHead>
+              <TableHead>Status</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {users.length === 0 && !isFetching ? (
+            {exams.length === 0 && !isFetching ? (
               <TableRow>
                 <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
-                  No users found.
+                  No exams found.
                 </TableCell>
               </TableRow>
             ) : (
-              users.map((user) => (
-                <TableRow key={user.id}>
-                  <TableCell className="font-medium">{user.name}</TableCell>
-                  <TableCell>{user.email}</TableCell>
-                  <TableCell>{user.role || "USER"}</TableCell>
-                  <TableCell>{user.age}</TableCell>
+              exams.map((exam) => (
+                <TableRow key={exam.id}>
+                  <TableCell className="font-medium">{exam.title}</TableCell>
+                  <TableCell className="font-mono text-xs">{exam.categoryId.substring(0, 8)}</TableCell>
+                  <TableCell>{exam.duration}m</TableCell>
+                  <TableCell>
+                    <span className={`px-2 py-1 rounded-full text-xs ${exam.isPublished ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                      {exam.isPublished ? "Published" : "Draft"}
+                    </span>
+                  </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">
                       <Button 
                         variant="outline" 
                         size="sm"
                         onClick={() => {
-                          setDataUpdate(user);
+                          setDataUpdate(exam);
                           setOpenModal(true);
                         }}
                       >
@@ -263,12 +296,12 @@ export default function UserPage() {
                           <AlertDialogHeader>
                             <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
                             <AlertDialogDescription>
-                              This action cannot be undone. This will permanently delete the user account.
+                              This action cannot be undone. This will permanently delete the exam.
                             </AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                             <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={() => handleDelete(user.id)}>Continue</AlertDialogAction>
+                            <AlertDialogAction onClick={() => handleDelete(exam.id)}>Continue</AlertDialogAction>
                           </AlertDialogFooter>
                         </AlertDialogContent>
                       </AlertDialog>
