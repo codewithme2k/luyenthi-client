@@ -146,7 +146,7 @@ export default function CategoryPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 relative">
+    <div className="p-6 space-y-6 relative w-full max-w-7xl mx-auto page-bg animate-fade-in">
       {isFetching && !openModal && <Loading />}
       
       <CategoryFormModal 

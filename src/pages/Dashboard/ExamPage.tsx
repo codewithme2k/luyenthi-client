@@ -78,11 +78,13 @@ const ExamFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
       reset({
         title: "",
         slug: "",
+        description: "",
         categoryId: "",
         duration: 0,
         totalMarks: 0,
         passMarks: 0,
-        isPublished: false
+        isPublished: false,
+        isPremium: false
       });
     }
   }, [dataUpdate, reset, open]);
@@ -93,7 +95,9 @@ const ExamFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
         ...data,
         duration: Number(data.duration),
         totalMarks: Number(data.totalMarks),
-        passMarks: Number(data.passMarks)
+        passMarks: Number(data.passMarks),
+        isPublished: !!data.isPublished,
+        isPremium: !!data.isPremium
       };
 
       if (dataUpdate) {
@@ -131,6 +135,15 @@ const ExamFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
             <Input id="slug" {...register("slug", { required: true })} />
           </div>
           <div className="space-y-2">
+            <Label htmlFor="description">Description</Label>
+            <textarea
+              id="description"
+              {...register("description")}
+              className="flex min-h-[85px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              placeholder="Nhập mô tả đề thi..."
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="categoryId">Category</Label>
             <Controller
               name="categoryId"
@@ -166,6 +179,33 @@ const ExamFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
               <Input id="passMarks" type="number" {...register("passMarks", { required: true })} />
             </div>
           </div>
+          
+          <div className="flex gap-6 pt-2">
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isPublished"
+                {...register("isPublished")}
+                className="w-4 h-4 text-primary bg-background border-border rounded focus:ring-primary focus:ring-2 cursor-pointer"
+              />
+              <Label htmlFor="isPublished" className="font-semibold text-xs text-foreground cursor-pointer">
+                Publish Exam
+              </Label>
+            </div>
+            
+            <div className="flex items-center space-x-2">
+              <input
+                type="checkbox"
+                id="isPremium"
+                {...register("isPremium")}
+                className="w-4 h-4 text-amber-500 bg-background border-border rounded focus:ring-amber-500 focus:ring-2 cursor-pointer"
+              />
+              <Label htmlFor="isPremium" className="font-bold text-xs text-amber-600 flex items-center gap-0.5 cursor-pointer">
+                👑 Premium VIP
+              </Label>
+            </div>
+          </div>
+
           <Button type="submit" disabled={isFetching} className="w-full">
             {isFetching ? "Saving..." : (dataUpdate ? "Update Exam" : "Create Exam")}
           </Button>
@@ -209,7 +249,7 @@ export default function ExamPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 relative">
+    <div className="p-6 space-y-6 relative w-full max-w-7xl mx-auto page-bg animate-fade-in">
       {isFetching && !openModal && <Loading />}
       
       <ExamFormModal 
@@ -269,9 +309,16 @@ export default function ExamPage() {
                   <TableCell className="font-mono text-xs">{exam.categoryId.substring(0, 8)}</TableCell>
                   <TableCell>{exam.duration}m</TableCell>
                   <TableCell>
-                    <span className={`px-2 py-1 rounded-full text-xs ${exam.isPublished ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
-                      {exam.isPublished ? "Published" : "Draft"}
-                    </span>
+                    <div className="flex flex-col gap-1 items-start">
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-semibold ${exam.isPublished ? "bg-green-100 text-green-700" : "bg-yellow-100 text-yellow-700"}`}>
+                        {exam.isPublished ? "Published" : "Draft"}
+                      </span>
+                      {exam.isPremium && (
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-black bg-amber-100 text-amber-700 border border-amber-200">
+                          👑 Premium
+                        </span>
+                      )}
+                    </div>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex justify-end gap-2">

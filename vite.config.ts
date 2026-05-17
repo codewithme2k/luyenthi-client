@@ -11,6 +11,11 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src')
     }
   },
+  server: {
+    port: 3000,
+    host: true,
+    open: true
+  },
   build: {
     chunkSizeWarningLimit: 500, // Tăng giới hạn cảnh báo lên 1000kB (1MB)
     rollupOptions: {

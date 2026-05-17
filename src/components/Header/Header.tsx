@@ -8,7 +8,7 @@ import { MobileMenu } from "./MobileMenu";
 export const Header: React.FC = () => {
   return (
     <header className="sticky top-0 w-full border-b border-border bg-background/80 backdrop-blur-md z-40 shadow-sm transition-all duration-300">
-      <div className="container mx-auto px-6 h-16 flex items-center justify-between gap-4">
+      <div className="container mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
         {/* Brand/Logo - Left */}
         <div className="flex items-center gap-6">
           <Brand />

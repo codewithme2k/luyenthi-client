@@ -16,7 +16,8 @@ import {
   Sparkles,
   Layers,
   CheckCircle,
-  HelpCircle
+  HelpCircle,
+  Crown
 } from "lucide-react";
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,8 +28,10 @@ const UserExamPage: React.FC = () => {
   const dispatch = useAppDispatch();
   const { data: exams, isFetching: isExamsFetching, meta: examsMeta } = useAppSelector((state) => state.exam);
   const { data: categories, isFetching: isCategoriesFetching } = useAppSelector((state) => state.category);
+  const { isAuthenticated, user } = useAppSelector((state) => state.account);
 
   // States
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const searchTerm = searchParams.get("searchTerm") || "";
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm);
@@ -77,6 +80,21 @@ const UserExamPage: React.FC = () => {
   };
 
   const handleStartExam = (exam: IExam) => {
+    if (exam.isPremium) {
+      if (!isAuthenticated) {
+        toast.error("Bạn cần đăng nhập để làm đề thi Premium!");
+        navigate("/login");
+        return;
+      }
+
+      const isPremiumUser = user?.isPremium === true;
+      const isAdminOrManager = user?.role === "ADMIN" || user?.role === "MANAGER";
+
+      if (!isPremiumUser && !isAdminOrManager) {
+        setShowUpgradeModal(true);
+        return;
+      }
+    }
     setPreviewExam(exam);
   };
 
@@ -226,22 +244,35 @@ const UserExamPage: React.FC = () => {
             {exams.map((exam: IExam & { category?: ICategory }) => (
               <div
                 key={exam.id}
-                className="glass p-6 rounded-2xl card-hover flex flex-col justify-between h-full border border-border"
+                className={`glass p-6 rounded-2xl card-hover flex flex-col justify-between h-full border transition-all duration-300 ${
+                  exam.isPremium 
+                    ? "border-amber-500/35 shadow-[0_4px_25px_rgba(245,158,11,0.03)] hover:border-amber-500/60" 
+                    : "border-border"
+                }`}
               >
                 <div>
                   {/* Card Header Tag */}
                   <div className="flex justify-between items-start gap-4 mb-3">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary px-2.5 py-1 rounded-lg border border-primary/20">
-                      {exam.category?.name || "Khác"}
-                    </span>
-                    <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="text-[10px] font-extrabold uppercase tracking-wider bg-primary/10 text-primary px-2.5 py-1 rounded-lg border border-primary/20">
+                        {exam.category?.name || "Khác"}
+                      </span>
+                      {exam.isPremium && (
+                        <span className="text-[10px] font-black uppercase tracking-wider bg-amber-500/15 text-amber-500 px-2 py-0.5 rounded-md border border-amber-500/25 flex items-center gap-1">
+                          <Crown className="w-3 h-3 fill-current" /> Premium
+                        </span>
+                      )}
+                    </div>
+                    <span className="text-xs text-muted-foreground font-semibold flex items-center gap-1 shrink-0">
                       <Clock className="w-3.5 h-3.5 text-primary" />
                       {exam.duration} phút
                     </span>
                   </div>
 
                   {/* Title & Description */}
-                  <h3 className="font-bold text-lg font-heading line-clamp-1 mb-2 hover:text-primary transition-colors cursor-pointer" title={exam.title}>
+                  <h3 className={`font-bold text-lg font-heading line-clamp-1 mb-2 hover:text-primary transition-colors cursor-pointer ${
+                    exam.isPremium ? "text-amber-500" : "text-foreground"
+                  }`} title={exam.title}>
                     {exam.title}
                   </h3>
                   <p className="text-sm text-muted-foreground line-clamp-3 mb-6 font-medium">
@@ -264,9 +295,13 @@ const UserExamPage: React.FC = () => {
 
                   <Button
                     onClick={() => handleStartExam(exam)}
-                    className="btn-premium w-full h-11 rounded-xl font-bold flex items-center justify-center gap-1.5 group cursor-pointer"
+                    className={`w-full h-11 rounded-xl font-bold flex items-center justify-center gap-1.5 group cursor-pointer ${
+                      exam.isPremium 
+                        ? "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white border border-amber-500/20 shadow-md shadow-amber-500/10 hover:shadow-amber-500/20" 
+                        : "btn-premium"
+                    }`}
                   >
-                    <span>Làm Bài Ngay</span>
+                    <span>{exam.isPremium ? "Làm Bài VIP" : "Làm Bài Ngay"}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </Button>
                 </div>
@@ -376,6 +411,48 @@ const UserExamPage: React.FC = () => {
                   className="btn-premium flex-1 h-11 rounded-xl font-bold cursor-pointer"
                 >
                   Bắt Đầu Ngay
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+      {showUpgradeModal && (
+        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="glass bg-background sm:max-w-[480px] w-full rounded-2xl overflow-hidden shadow-2xl animate-fade-in border border-amber-500/25">
+            <div className="p-6 space-y-6">
+              {/* Header */}
+              <div className="text-center space-y-2">
+                <div className="mx-auto w-14 h-14 rounded-full bg-amber-500/10 flex items-center justify-center text-amber-500 mb-2 border border-amber-500/20 animate-pulse">
+                  <Crown className="w-8 h-8 fill-current animate-bounce-slow" />
+                </div>
+                <h3 className="text-2xl font-black font-heading text-amber-500">Mở Khóa Gói Premium VIP 👑</h3>
+                <p className="text-[10px] text-muted-foreground uppercase font-extrabold tracking-wider bg-amber-500/10 border border-amber-500/25 px-2.5 py-1 rounded-lg w-fit mx-auto">
+                  NỘI DUNG ĐỘC QUYỀN VIP
+                </p>
+              </div>
+
+              <div className="text-sm text-foreground/80 leading-relaxed text-center font-semibold">
+                Đề thi thử này chỉ dành riêng cho thành viên <strong>Premium VIP</strong>. Bạn sẽ mở khóa hàng trăm đề thi VIP khác kèm lời giải chi tiết và hỗ trợ 24/7 từ giáo viên.
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex gap-3 border-t border-border pt-4">
+                <Button
+                  onClick={() => setShowUpgradeModal(false)}
+                  variant="outline"
+                  className="flex-1 h-11 rounded-xl font-bold cursor-pointer"
+                >
+                  Để sau
+                </Button>
+                <Button
+                  onClick={() => {
+                    setShowUpgradeModal(false);
+                    navigate("/premium");
+                  }}
+                  className="btn-premium flex-1 h-11 rounded-xl font-bold cursor-pointer shadow-lg shadow-primary/20 flex items-center justify-center gap-1.5"
+                >
+                  <Crown className="w-4 h-4 fill-current" /> Nâng Cấp Ngay
                 </Button>
               </div>
             </div>

@@ -1,13 +1,15 @@
 import React, { useMemo } from "react";
+import { useNavigate } from "react-router";
 import type { IExam, IQuestion } from "@/types/backend";
 import { Button } from "@/components/ui/button";
-import { Award, Target, CheckCircle2, XCircle, ArrowLeft, Clock } from "lucide-react";
+import { Award, Target, CheckCircle2, XCircle, ArrowLeft, Clock, Eye } from "lucide-react";
 
 interface ExamResultProps {
   exam: IExam;
   questions: IQuestion[];
   answers: Record<string, any>;
   timeSpent: number; // in seconds
+  sessionId?: string;
   onBackToExams: () => void;
 }
 
@@ -16,8 +18,10 @@ export const ExamResult: React.FC<ExamResultProps> = ({
   questions, 
   answers, 
   timeSpent,
+  sessionId,
   onBackToExams 
 }) => {
+  const navigate = useNavigate();
   const result = useMemo(() => {
     let correct = 0;
     let incorrect = 0;
@@ -115,10 +119,16 @@ export const ExamResult: React.FC<ExamResultProps> = ({
         )}
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center mt-8">
-          <Button onClick={onBackToExams} className="btn-premium h-12 px-8 rounded-xl font-bold gap-2">
+          <Button onClick={onBackToExams} variant="outline" className="border-border hover:bg-muted h-12 px-8 rounded-xl font-bold gap-2">
             <ArrowLeft className="w-5 h-5" />
             Trở Về Kho Đề Thi
           </Button>
+          {sessionId && (
+            <Button onClick={() => navigate(`/exam-result/${sessionId}`)} className="btn-premium h-12 px-8 rounded-xl font-bold gap-2">
+              <Eye className="w-5 h-5" />
+              Xem Chi Tiết Bài Làm
+            </Button>
+          )}
         </div>
       </div>
     </div>

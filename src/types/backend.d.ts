@@ -37,6 +37,8 @@ export interface IGetAccount {
   email: string;
   name: string;
   role: string;
+  isPremium?: boolean;
+  premiumUntil?: string;
 }
 
 export interface IUser {
@@ -48,6 +50,8 @@ export interface IUser {
   address?: string;
   age?: number;
   contactNo?: string;
+  isPremium?: boolean;
+  premiumUntil?: string;
   createdAt?: string;
   updatedAt?: string;
   isActive?: boolean;
@@ -81,6 +85,7 @@ export interface IExam {
   totalMarks: number;
   passMarks: number;
   isPublished: boolean;
+  isPremium: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -93,6 +98,14 @@ export interface IPost {
   thumbnail?: string;
   isPublished: boolean;
   authorId: string;
+  author?: {
+    id: string;
+    name: string;
+    email: string;
+    profileImg?: string;
+  };
+  likedBy?: any[];
+  savedBy?: any[];
   createdAt?: string;
   updatedAt?: string;
 }
@@ -116,4 +129,23 @@ export interface IQuestion {
   options?: IAnswerOption[];
   createdAt?: string;
   updatedAt?: string;
+}
+
+export interface IMembershipRequest {
+  id: string;
+  userId: string;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    contactNo?: string;
+    isPremium?: boolean;
+    premiumUntil?: string;
+  };
+  plan: 'ONE_MONTH' | 'SIX_MONTHS' | 'ONE_YEAR';
+  amount: number;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  transactionCode: string;
+  createdAt: string;
+  updatedAt: string;
 }

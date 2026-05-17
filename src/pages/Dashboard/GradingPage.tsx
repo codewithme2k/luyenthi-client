@@ -74,7 +74,7 @@ export const GradingPage = () => {
   };
 
   return (
-    <div className="p-6 space-y-6 relative">
+    <div className="p-6 space-y-6 relative w-full max-w-7xl mx-auto page-bg animate-fade-in">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-heading font-bold text-foreground">Chấm Thi</h1>
@@ -157,7 +157,7 @@ export const GradingPage = () => {
                 {selectedSession.userAnswers.map((answer: any, index: number) => {
                   const q = answer.question;
                   const isPending = q.type === 'ESSAY' && answer.isCorrect === null;
-                  const isEssay = q.type === 'ESSAY';
+                  const isEssay = q.type === 'ESSAY' || q.type === 'FILL_BLANK';
 
                   return (
                     <div key={answer.id} className={`p-4 border rounded-xl transition-colors ${isPending
@@ -233,8 +233,16 @@ export const GradingPage = () => {
                               })}
                             </div>
                           ) : (
-                            <div className="p-4 bg-muted/40 rounded-lg whitespace-pre-wrap font-medium text-foreground border border-border text-sm shadow-inner">
-                              {answer.textContent || <span className="text-muted-foreground italic">(Học sinh bỏ trống)</span>}
+                            <div className="space-y-3">
+                              <div className="p-4 bg-muted/40 rounded-lg whitespace-pre-wrap font-medium text-foreground border border-border text-sm shadow-inner">
+                                {answer.textContent || <span className="text-muted-foreground italic">(Học sinh bỏ trống)</span>}
+                              </div>
+                              {q.type === 'FILL_BLANK' && (
+                                <div className="p-3.5 bg-emerald-50/50 border border-emerald-200/60 rounded-lg text-xs font-bold text-emerald-800 flex items-center gap-2 shadow-xs">
+                                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                                  <span>Đáp án mẫu đúng: <span className="underline decoration-2 bg-emerald-100/50 px-1.5 py-0.5 rounded">{q.options?.find((opt: any) => opt.isCorrect)?.content || "Chưa cấu hình"}</span></span>
+                                </div>
+                              )}
                             </div>
                           )}
                         </div>

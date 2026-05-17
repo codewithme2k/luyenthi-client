@@ -102,7 +102,7 @@ const QuestionFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess
   const onSubmit = async (data: Partial<IQuestion>) => {
     try {
       // Build clean options array
-      const cleanOptions = (data.type === "ESSAY" || data.type === "FILL_BLANK")
+      const cleanOptions = (data.type === "ESSAY")
         ? undefined
         : data.options?.map((opt: any, index: number) => ({
           content: opt.content || "",
@@ -225,7 +225,7 @@ const QuestionFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess
             />
           </div>
 
-          {!["ESSAY", "FILL_BLANK"].includes(questionType || "") && (
+          {questionType !== "ESSAY" && (
             <div className="space-y-4 border-t pt-4">
               <div className="flex justify-between items-center">
                 <Label>Answer Options</Label>
@@ -364,7 +364,7 @@ const QuestionBulkImportModal = ({ open, setOpen, onSuccess }: IBulkProps) => {
     try {
       for (const q of parsedPreview) {
         // Clean options for types like ESSAY or FILL_BLANK which shouldn't have them
-        const hasOptions = ["SINGLE_CHOICE", "MULTIPLE_CHOICE", "TRUE_FALSE", "MATCHING"].includes(q.type);
+        const hasOptions = ["SINGLE_CHOICE", "MULTIPLE_CHOICE", "TRUE_FALSE", "MATCHING", "FILL_BLANK"].includes(q.type);
         const cleanOptions = hasOptions
           ? q.options?.map((opt: any, index: number) => ({
             content: opt.content || "",
@@ -400,7 +400,7 @@ const QuestionBulkImportModal = ({ open, setOpen, onSuccess }: IBulkProps) => {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto">
+      <DialogContent className=" sm:max-w-[1450px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Bulk Import Questions (JSON)</DialogTitle>
         </DialogHeader>
@@ -504,9 +504,11 @@ const QuestionBulkImportModal = ({ open, setOpen, onSuccess }: IBulkProps) => {
 export default function QuestionPage() {
   const dispatch = useAppDispatch();
   const { data: questions, isFetching, meta } = useAppSelector((state) => state.question);
+  const { data: exams } = useAppSelector((state) => state.exam);
   const [page, setPage] = useState(1);
   const [searchTerm, setSearchTerm] = useState("");
-  const limit = 10;
+  const [selectedExamId, setSelectedExamId] = useState("ALL");
+  const limit = 20;
   const totalPages = Math.ceil((meta?.total || 0) / limit);
 
   const [openModal, setOpenModal] = useState(false);
@@ -514,15 +516,32 @@ export default function QuestionPage() {
   const [dataUpdate, setDataUpdate] = useState<IQuestion | null>(null);
 
   useEffect(() => {
+    dispatch(fetchExam({ query: "limit=1000" }));
+  }, [dispatch]);
+
+  useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      dispatch(fetchQuestion({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
+      let query = `page=${page}&limit=${limit}&searchTerm=${searchTerm}`;
+      if (selectedExamId && selectedExamId !== "ALL") {
+        query += `&examId=${selectedExamId}`;
+      }
+      dispatch(fetchQuestion({ query }));
     }, 500);
 
     return () => clearTimeout(delayDebounceFn);
-  }, [dispatch, page, searchTerm]);
+  }, [dispatch, page, searchTerm, selectedExamId]);
 
   const loadQuestions = () => {
-    dispatch(fetchQuestion({ query: `page=${page}&limit=${limit}&searchTerm=${searchTerm}` }));
+    let query = `page=${page}&limit=${limit}&searchTerm=${searchTerm}`;
+    if (selectedExamId && selectedExamId !== "ALL") {
+      query += `&examId=${selectedExamId}`;
+    }
+    dispatch(fetchQuestion({ query }));
+  };
+
+  const handleExamChange = (value: string) => {
+    setSelectedExamId(value);
+    setPage(1);
   };
 
   const handleDelete = async (id: string) => {
@@ -536,7 +555,7 @@ export default function QuestionPage() {
   };
 
   return (
-    <div className="p-6 space-y-6 relative">
+    <div className="p-6 space-y-6 relative w-full max-w-7xl mx-auto page-bg animate-fade-in">
       {isFetching && !openModal && <Loading />}
 
       <QuestionFormModal
@@ -555,7 +574,24 @@ export default function QuestionPage() {
 
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Question Management</h1>
-        <div className="flex gap-4">
+        <div className="flex items-center gap-4">
+          {/* Exam Filter Select Dropdown */}
+          <div className="w-64">
+            <Select onValueChange={handleExamChange} value={selectedExamId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Lọc theo bài thi" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="ALL">Tất cả đề thi</SelectItem>
+                {exams.map((exam) => (
+                  <SelectItem key={exam.id} value={exam.id}>
+                    {exam.title}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
           <div className="relative w-64">
             <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input

@@ -26,6 +26,8 @@ interface IState {
     address?: string;
     gender?: string;
     profileImg?: string | null;
+    isPremium?: boolean;
+    premiumUntil?: string;
   };
   activeMenu: string;
 }
@@ -44,6 +46,8 @@ const initialState: IState = {
     address: "",
     gender: "male",
     profileImg: null,
+    isPremium: false,
+    premiumUntil: "",
   },
   activeMenu: "home",
 };
@@ -71,6 +75,8 @@ export const accountSlice = createSlice({
         email: "",
         name: "",
         role: "",
+        isPremium: false,
+        premiumUntil: "",
       };
     },
 
@@ -105,6 +111,8 @@ export const accountSlice = createSlice({
         state.user.address = (user as any).address || "";
         state.user.gender = (user as any).gender || "male";
         state.user.profileImg = (user as any).profileImg || null;
+        state.user.isPremium = user.isPremium ?? false;
+        state.user.premiumUntil = user.premiumUntil ?? "";
       } else {
         state.isAuthenticated = false;
         state.isLoading = false;

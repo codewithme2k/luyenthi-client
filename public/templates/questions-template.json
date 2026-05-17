@@ -1,53 +1,262 @@
 [
   {
-    "content": "Ai là người đầu tiên đặt chân lên Mặt Trăng?",
+    "content": "Hành tinh nào gần Mặt Trời nhất trong Hệ Mặt Trời?",
     "type": "SINGLE_CHOICE",
     "score": 1,
     "order": 1,
-    "explanation": "Neil Armstrong đặt chân lên Mặt Trăng vào ngày 21 tháng 7 năm 1969.",
+    "explanation": "Sao Thủy (Mercury) là hành tinh nằm ở vị trí gần Mặt Trời nhất.",
     "options": [
-      { "content": "Neil Armstrong", "isCorrect": true, "order": 1 },
-      { "content": "Yuri Gagarin", "isCorrect": false, "order": 2 },
-      { "content": "Buzz Aldrin", "isCorrect": false, "order": 3 },
-      { "content": "Michael Collins", "isCorrect": false, "order": 4 }
+      { "content": "Sao Thủy", "isCorrect": true, "order": 1 },
+      { "content": "Sao Kim", "isCorrect": false, "order": 2 },
+      { "content": "Trái Đất", "isCorrect": false, "order": 3 },
+      { "content": "Sao Hỏa", "isCorrect": false, "order": 4 }
     ]
   },
   {
-    "content": "Những quốc gia nào sau đây thuộc khu vực Đông Nam Á?",
+    "content": "Những đại dương nào sau đây bao quanh lục địa Châu Á?",
     "type": "MULTIPLE_CHOICE",
     "score": 2,
     "order": 2,
-    "explanation": "Việt Nam và Thái Lan ở Đông Nam Á, Nhật Bản ở Đông Á, Pháp ở Châu Âu.",
+    "explanation": "Châu Á tiếp giáp với Bắc Băng Dương ở phía Bắc, Thái Bình Dương ở phía Đông và Ấn Độ Dương ở phía Nam.",
     "options": [
-      { "content": "Việt Nam", "isCorrect": true, "order": 1 },
-      { "content": "Thái Lan", "isCorrect": true, "order": 2 },
-      { "content": "Nhật Bản", "isCorrect": false, "order": 3 },
-      { "content": "Pháp", "isCorrect": false, "order": 4 }
+      { "content": "Thái Bình Dương", "isCorrect": true, "order": 1 },
+      { "content": "Ấn Độ Dương", "isCorrect": true, "order": 2 },
+      { "content": "Bắc Băng Dương", "isCorrect": true, "order": 3 },
+      { "content": "Đại Tây Dương", "isCorrect": false, "order": 4 }
     ]
   },
   {
-    "content": "Nước sôi ở nhiệt độ 100 độ C ở áp suất khí quyển tiêu chuẩn.",
+    "content": "Kim cương và than chì đều được cấu tạo từ cùng một nguyên tố hóa học là Cacbon.",
     "type": "TRUE_FALSE",
     "score": 1,
     "order": 3,
-    "explanation": "Ở điều kiện tiêu chuẩn, điểm sôi của nước nguyên chất là 100 độ C.",
+    "explanation": "Đúng, kim cương và than chì là các dạng thù hình của nguyên tố Cacbon.",
     "options": [
       { "content": "Đúng", "isCorrect": true, "order": 1 },
       { "content": "Sai", "isCorrect": false, "order": 2 }
     ]
   },
   {
-    "content": "Hoàn thành câu sau: Trái Đất quay quanh ____.",
+    "content": "Hoàn thành câu sau: Hiện tượng quang hợp ở cây xanh diễn ra chủ yếu ở bộ phận ____.",
     "type": "FILL_BLANK",
     "score": 1,
     "order": 4,
-    "explanation": "Trái Đất quay quanh Mặt Trời theo chu kỳ khoảng 365,25 ngày."
+    "explanation": "Quang hợp diễn ra chủ yếu ở lá cây, nơi chứa nhiều lục lạp và chất diệp lục.",
+    "options": [
+      { "content": "lá cây", "isCorrect": true, "order": 1 }
+    ]
   },
   {
-    "content": "Trình bày suy nghĩ của em về tầm quan trọng của việc tự học.",
+    "content": "Hãy viết một đoạn văn ngắn nêu giải pháp cá nhân của em để giảm thiểu rác thải nhựa trong đời sống hàng ngày.",
     "type": "ESSAY",
     "score": 5,
     "order": 5,
-    "explanation": "Học sinh cần làm nổi bật tính chủ động, khả năng tự nghiên cứu và lợi ích dài hạn của việc tự học."
+    "explanation": "Học sinh cần đưa ra được các hành động thực tế như: hạn chế túi nilon, dùng bình nước cá nhân, tái chế đồ nhựa..."
+  },
+  {
+    "content": "Ai là tác giả của tác phẩm văn học mạng nổi tiếng 'Truyện Kiều'?",
+    "type": "SINGLE_CHOICE",
+    "score": 1,
+    "order": 6,
+    "explanation": "Đại thi hào Nguyễn Du là tác giả của Đoạn trường tân thanh (Truyện Kiều).",
+    "options": [
+      { "content": "Nguyễn Du", "isCorrect": true, "order": 1 },
+      { "content": "Nguyễn Trãi", "isCorrect": false, "order": 2 },
+      { "content": "đoàn Thị Điểm", "isCorrect": false, "order": 3 },
+      { "content": "Hồ Xuân Hương", "isCorrect": false, "order": 4 }
+    ]
+  },
+  {
+    "content": "Những số nào sau đây là số nguyên tố?",
+    "type": "MULTIPLE_CHOICE",
+    "score": 2,
+    "order": 7,
+    "explanation": "2 và 7 là các số tự nhiên lớn hơn 1, chỉ chia hết cho 1 và chính nó. 4 và 9 là hợp số.",
+    "options": [
+      { "content": "2", "isCorrect": true, "order": 1 },
+      { "content": "7", "isCorrect": true, "order": 2 },
+      { "content": "4", "isCorrect": false, "order": 3 },
+      { "content": "9", "isCorrect": false, "order": 4 }
+    ]
+  },
+  {
+    "content": "Vạn Lý Trường Thành là công trình kiến trúc nổi tiếng nằm ở đất nước Nhật Bản.",
+    "type": "TRUE_FALSE",
+    "score": 1,
+    "order": 8,
+    "explanation": "Sai, Vạn Lý Trường Thành là công trình lịch sử vĩ đại của Trung Quốc.",
+    "options": [
+      { "content": "Đúng", "isCorrect": false, "order": 1 },
+      { "content": "Sai", "isCorrect": true, "order": 2 }
+    ]
+  },
+  {
+    "content": "Hoàn thành câu sau: Đơn vị đo cường độ dòng điện trong hệ đo lường quốc tế là ____.",
+    "type": "FILL_BLANK",
+    "score": 1,
+    "order": 9,
+    "explanation": "Cường độ dòng điện được đo bằng đơn vị Ampe (ký hiệu là A).",
+    "options": [
+      { "content": "Ampe", "isCorrect": true, "order": 1 }
+    ]
+  },
+  {
+    "content": "Phân tích ý nghĩa của câu tục ngữ 'Uống nước nhớ nguồn' đối với thế hệ trẻ ngày nay.",
+    "type": "ESSAY",
+    "score": 5,
+    "order": 10,
+    "explanation": "Cần nêu bật được bài học về lòng biết ơn đối với thế hệ đi trước, tổ tiên và những người có công với đất nước."
+  },
+  {
+    "content": "Kinh đô đầu tiên của nhà nước Văn Lang cổ đại thuộc tỉnh nào của Việt Nam ngày nay?",
+    "type": "SINGLE_CHOICE",
+    "score": 1,
+    "order": 11,
+    "explanation": "Kinh đô Phong Châu của nhà nước Văn Lang thuộc địa phận tỉnh Phú Thọ ngày nay.",
+    "options": [
+      { "content": "Phú Thọ", "isCorrect": true, "order": 1 },
+      { "content": "Hà Nội", "isCorrect": false, "order": 2 },
+      { "content": "Ninh Bình", "isCorrect": false, "order": 3 },
+      { "content": "Thanh Hóa", "isCorrect": false, "order": 4 }
+    ]
+  },
+  {
+    "content": "Hợp chất nào sau đây có khả năng làm đổi màu quỳ tím sang màu đỏ (hồng)?",
+    "type": "MULTIPLE_CHOICE",
+    "score": 2,
+    "order": 12,
+    "explanation": "HCl và H2SO4 là các axit mạnh, có đặc tính làm quỳ tím hóa đỏ. NaOH là bazơ (hóa xanh), NaCl là muối trung tính.",
+    "options": [
+      { "content": "Axit clohiđric (HCl)", "isCorrect": true, "order": 1 },
+      { "content": "Axit sunfuric (H2SO4)", "isCorrect": true, "order": 2 },
+      { "content": "Natri hiđroxit (NaOH)", "isCorrect": false, "order": 3 },
+      { "content": "Natri clorua (NaCl)", "isCorrect": false, "order": 4 }
+    ]
+  },
+  {
+    "content": "Tế bào là đơn vị cấu trúc và chức năng cơ bản của mọi sinh vật sống.",
+    "type": "TRUE_FALSE",
+    "score": 1,
+    "order": 13,
+    "explanation": "Đúng, mọi sinh vật từ đơn bào đến đa bào đều được cấu tạo từ tế bào.",
+    "options": [
+      { "content": "Đúng", "isCorrect": true, "order": 1 },
+      { "content": "Sai", "isCorrect": false, "order": 2 }
+    ]
+  },
+  {
+    "content": "Hoàn thành câu sau: Công thức tính diện tích hình tròn là S = ____ nhân với bình phương bán kính (r²).",
+    "type": "FILL_BLANK",
+    "score": 1,
+    "order": 14,
+    "explanation": "Diện tích hình tròn được tính bằng công thức S = pi * r² (với số pi xấp xỉ 3,14).",
+    "options": [
+      { "content": "pi", "isCorrect": true, "order": 1 }
+    ]
+  },
+  {
+    "content": "Theo em, trí tuệ nhân tạo (AI) sẽ mang lại những cơ hội và thách thức gì cho ngành giáo dục?",
+    "type": "ESSAY",
+    "score": 5,
+    "order": 15,
+    "explanation": "Nêu được cơ hội (cá nhân hóa học tập, tìm kiếm thông tin nhanh) và thách thức (gian lận học thuật, mất tương tác người với người)."
+  },
+  {
+    "content": "Quốc gia nào có diện tích lãnh thổ lớn nhất thế giới?",
+    "type": "SINGLE_CHOICE",
+    "score": 1,
+    "order": 16,
+    "explanation": "Liên bang Nga là quốc gia có diện tích lớn nhất thế giới, trải dài trên cả hai châu lục châu Á và châu Âu.",
+    "options": [
+      { "content": "Liên bang Nga", "isCorrect": true, "order": 1 },
+      { "content": "Canada", "isCorrect": false, "order": 2 },
+      { "content": "Mỹ", "isCorrect": false, "order": 3 },
+      { "content": "Trung Quốc", "isCorrect": false, "order": 4 }
+    ]
+  },
+  {
+    "content": "Những vitamin nào sau đây thuộc nhóm vitamin tan trong dầu (chất béo)?",
+    "type": "MULTIPLE_CHOICE",
+    "score": 2,
+    "order": 17,
+    "explanation": "Các vitamin tan trong dầu gồm có A, D, E, K. Vitamin C và nhóm B tan trong nước.",
+    "options": [
+      { "content": "Vitamin A", "isCorrect": true, "order": 1 },
+      { "content": "Vitamin D", "isCorrect": true, "order": 2 },
+      { "content": "Vitamin C", "isCorrect": false, "order": 3 },
+      { "content": "Vitamin B1", "isCorrect": false, "order": 4 }
+    ]
+  },
+  {
+    "content": "Âm thanh có thể truyền đi trong môi trường chân không.",
+    "type": "TRUE_FALSE",
+    "score": 1,
+    "order": 18,
+    "explanation": "Sai, âm thanh là sóng cơ học nên cần môi trường vật chất (rắn, lỏng, khí) để truyền đi và không truyền được trong chân không.",
+    "options": [
+      { "content": "Đúng", "isCorrect": false, "order": 1 },
+      { "content": "Sai", "isCorrect": true, "order": 2 }
+    ]
+  },
+  {
+    "content": "Hoàn thành câu sau: Châu lục lạnh nhất và khô nhất trên Trái Đất là ____.",
+    "type": "FILL_BLANK",
+    "score": 1,
+    "order": 19,
+    "explanation": "Châu Nam Cực là nơi có nhiệt độ thấp kỷ lục và có lượng mưa vô cùng ít, được coi là một hoang mạc lạnh.",
+    "options": [
+      { "content": "Châu Nam Cực", "isCorrect": true, "order": 1 }
+    ]
+  },
+  {
+    "content": "Tại sao việc bảo vệ sự đa dạng sinh học lại có ý nghĩa sống còn đối với sự cân bằng sinh thái trên Trái Đất?",
+    "type": "ESSAY",
+    "score": 5,
+    "order": 20,
+    "explanation": "Cần phân tích mối quan hệ xích thức ăn, nguồn cung cấp oxy, dược liệu, thức ăn và sự bền vững của môi trường trước biến đổi khí hậu."
+  },
+  {
+    "content": "Chiến dịch Điện Biên Phủ lừng lẫy năm châu, chấn động địa cầu giành thắng lợi hoàn toàn vào năm ____.",
+    "type": "FILL_BLANK",
+    "score": 1,
+    "order": 21,
+    "explanation": "Chiến dịch Điện Biên Phủ kết thúc thắng lợi vào ngày 7 tháng 5 năm 1954.",
+    "options": [
+      { "content": "1954", "isCorrect": true, "order": 1 }
+    ]
+  },
+  {
+    "content": "Write a short paragraph (50-80 words) describing the benefits of regular exercise (Hãy viết một đoạn văn ngắn khoảng 50-80 từ mô tả lợi ích của việc tập thể dục thường xuyên).",
+    "type": "ESSAY",
+    "score": 3,
+    "order": 22,
+    "explanation": "Học sinh cần nêu được các lợi ích như tăng cường sức khỏe, giảm căng thẳng, tăng năng lượng và có cấu trúc ngữ pháp đúng."
+  },
+  {
+    "content": "Quốc gia duy nhất trên thế giới chiếm trọn cả một lục địa rộng lớn là nước ____.",
+    "type": "FILL_BLANK",
+    "score": 1,
+    "order": 23,
+    "explanation": "Australia (Úc) là quốc gia duy nhất chiếm lĩnh toàn bộ lục địa Úc.",
+    "options": [
+      { "content": "Australia", "isCorrect": true, "order": 1 }
+    ]
+  },
+  {
+    "content": "Theo em, học sinh cần làm gì để rèn luyện thói quen tự học hiệu quả tại nhà?",
+    "type": "ESSAY",
+    "score": 3,
+    "order": 24,
+    "explanation": "Các giải pháp có thể gồm: lập thời gian biểu, tắt thiết bị gây xao nhãng, tóm tắt bài học bằng sơ đồ tư duy..."
+  },
+  {
+    "content": "Khí chiếm tỷ lệ thể tích lớn nhất trong khí quyển Trái Đất (khoảng 78%) là khí ____.",
+    "type": "FILL_BLANK",
+    "score": 1,
+    "order": 25,
+    "explanation": "Khí Nitơ (Nitrogen) chiếm khoảng 78% thể tích không khí.",
+    "options": [
+      { "content": "Nitơ", "isCorrect": true, "order": 1 }
+    ]
   }
 ]
