@@ -1,13 +1,10 @@
 import { useState, useEffect, useMemo } from 'react'
 import { callFetchExamSessions } from '@/config/api'
 import { toast } from 'sonner'
-
-// Modular Sub-components
 import { LeaderboardHeader } from '@/components/Client/Leaderboard/LeaderboardHeader'
 import { LeaderboardFilters } from '@/components/Client/Leaderboard/LeaderboardFilters'
 import { LeaderboardPodium } from '@/components/Client/Leaderboard/LeaderboardPodium'
 import { LeaderboardTable } from '@/components/Client/Leaderboard/LeaderboardTable'
-
 interface LeaderboardStudent {
   id: string
   name: string
@@ -30,7 +27,6 @@ export default function LeaderboardPage() {
     const loadSessions = async () => {
       try {
         setLoading(true)
-        // Fetch a large batch of system-wide sessions to aggregate
         const res = await callFetchExamSessions('limit=1000')
         if (res.data?.success) {
           setSessions(res.data?.data || [])

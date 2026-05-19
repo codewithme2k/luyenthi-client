@@ -52,9 +52,8 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ rankedStuden
                 return (
                   <tr
                     key={student.id}
-                    className={`hover:bg-muted/30 transition-colors ${
-                      rank <= 3 && !searchTerm ? 'bg-amber-500/2' : ''
-                    }`}
+                    className={`hover:bg-muted/30 transition-colors ${rank <= 3 && !searchTerm ? 'bg-amber-500/2' : ''
+                      }`}
                   >
                     {/* Rank Indicator */}
                     <td className='py-4 px-6 text-center'>
@@ -91,9 +90,8 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ rankedStuden
                         </div>
                         <div className='min-w-0'>
                           <span
-                            className={`text-sm font-extrabold flex items-center gap-1 truncate ${
-                              student.isPremium ? 'text-amber-500 font-black' : 'text-foreground'
-                            }`}
+                            className={`text-sm font-extrabold flex items-center gap-1 truncate ${student.isPremium ? 'text-amber-500 font-black' : 'text-foreground'
+                              }`}
                           >
                             {student.name}
                             {student.isPremium && <Crown className='w-3.5 h-3.5 fill-current shrink-0' />}
@@ -124,13 +122,12 @@ export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ rankedStuden
                       <div className='flex items-center justify-center gap-2 max-w-[120px] mx-auto'>
                         <div className='w-full bg-muted rounded-full h-1.5 overflow-hidden border border-border'>
                           <div
-                            className={`h-full rounded-full ${
-                              student.accuracyRate >= 80
+                            className={`h-full rounded-full ${student.accuracyRate >= 80
                                 ? 'bg-emerald-500'
                                 : student.accuracyRate >= 50
                                   ? 'bg-amber-500'
                                   : 'bg-rose-500'
-                            }`}
+                              }`}
                             style={{ width: `${student.accuracyRate}%` }}
                           />
                         </div>
