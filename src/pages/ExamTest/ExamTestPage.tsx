@@ -29,6 +29,7 @@ export const ExamTestPage: React.FC = () => {
   const [isSubmitted, setIsSubmitted] = useState(false)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submittedSessionId, setSubmittedSessionId] = useState<string | undefined>(undefined)
+  const [submitResult, setSubmitResult] = useState<any>(null)
 
   const [timeLeft, setTimeLeft] = useState(0)
   const [timeSpent, setTimeSpent] = useState(0)
@@ -120,6 +121,7 @@ export const ExamTestPage: React.FC = () => {
       const res = await callSubmitExam(exam.id, payload)
       if (res.data?.success) {
         setSubmittedSessionId(res.data.data?.sessionId)
+        setSubmitResult(res.data.data)
         setIsSubmitted(true)
         toast.success('Nộp bài thành công! Điểm số đã được lưu lại.')
         window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -183,6 +185,7 @@ export const ExamTestPage: React.FC = () => {
           answers={answers}
           timeSpent={timeSpent}
           sessionId={submittedSessionId}
+          serverResult={submitResult}
           onBackToExams={() => navigate('/exams')}
         />
       </div>

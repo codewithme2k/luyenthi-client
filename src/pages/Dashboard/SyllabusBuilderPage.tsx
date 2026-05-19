@@ -13,10 +13,8 @@ import {
   FileJson, 
   Play, 
   Check, 
-  Sparkles,
   HelpCircle,
   Eye,
-  Crown,
   X,
   GripVertical
 } from "lucide-react";

@@ -4,12 +4,13 @@ import {
   callCreateQuestion,
   callUpdateQuestion,
   callDeleteQuestion,
+  callBulkDeleteQuestions,
 } from "@/config/api";
 import type { IQuestion } from "@/types/backend";
 
 /* =====================
    Thunk
-===================== */
+ ===================== */
 export const fetchQuestion = createAsyncThunk(
   "question/fetchQuestion",
   async ({ query }: { query?: string }) => {
@@ -38,6 +39,14 @@ export const deleteQuestion = createAsyncThunk(
   "question/deleteQuestion",
   async ({ id }: { id: string }) => {
     const res = await callDeleteQuestion(id);
+    return res.data;
+  }
+);
+
+export const bulkDeleteQuestions = createAsyncThunk(
+  "question/bulkDeleteQuestions",
+  async ({ ids }: { ids: string[] }) => {
+    const res = await callBulkDeleteQuestions(ids);
     return res.data;
   }
 );
@@ -137,6 +146,20 @@ const questionSlice = createSlice({
         }
       })
       .addCase(deleteQuestion.rejected, (state) => {
+        state.isFetching = false;
+      })
+      
+      .addCase(bulkDeleteQuestions.pending, (state) => {
+        state.isFetching = true;
+      })
+      .addCase(bulkDeleteQuestions.fulfilled, (state, action) => {
+        state.isFetching = false;
+        if (action.payload?.success) {
+          const deletedIds = action.meta.arg.ids;
+          state.data = state.data.filter((q) => !deletedIds.includes(q.id));
+        }
+      })
+      .addCase(bulkDeleteQuestions.rejected, (state) => {
         state.isFetching = false;
       });
   },

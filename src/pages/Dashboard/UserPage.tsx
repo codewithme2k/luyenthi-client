@@ -64,7 +64,8 @@ const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
         age: dataUpdate.age,
         gender: dataUpdate.gender,
         address: dataUpdate.address,
-        contactNo: dataUpdate.contactNo
+        contactNo: dataUpdate.contactNo,
+        role: dataUpdate.role || "USER"
       });
     } else {
       reset({
@@ -74,7 +75,8 @@ const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
         age: 0,
         gender: "",
         address: "",
-        contactNo: ""
+        contactNo: "",
+        role: "USER"
       });
     }
   }, [dataUpdate, reset, open]);
@@ -121,6 +123,18 @@ const UserFormModal = ({ open, setOpen, dataUpdate, setDataUpdate, onSuccess }: 
               <Input id="password" type="password" {...register("password", { required: true })} />
             </div>
           )}
+          <div className="space-y-2">
+            <Label htmlFor="role">Role</Label>
+            <select
+              id="role"
+              {...register("role")}
+              className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="USER">USER</option>
+              <option value="ADMIN">ADMIN</option>
+              <option value="SUPER_ADMIN">SUPER_ADMIN</option>
+            </select>
+          </div>
           <div className="space-y-2">
             <Label htmlFor="age">Age</Label>
             <Input id="age" type="number" {...register("age", { required: true, valueAsNumber: true })} />

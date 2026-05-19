@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useLocation, useNavigate, Link } from 'react-router'
-import { useForm } from 'react-hook-form'
+import { useForm, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import * as z from 'zod'
 import { toast } from 'sonner'
@@ -12,14 +12,16 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Field, FieldDescription, FieldGroup, FieldLabel, FieldSeparator } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Loader2, Mail, Lock, Eye, EyeOff, Sparkles } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Loader2, Mail, Lock, Eye, EyeOff } from 'lucide-react'
 
 const formSchema = z.object({
   email: z.string().min(1, { message: 'Email không được để trống!' }).email({ message: 'Email không hợp lệ!' }),
   password: z
     .string()
     .min(1, { message: 'Mật khẩu không được để trống!' })
-    .max(30, { message: 'Mật khẩu không được quá 30 ký tự!' })
+    .max(30, { message: 'Mật khẩu không được quá 30 ký tự!' }),
+  rememberMe: z.boolean().optional()
 })
 
 type LoginFormValues = z.infer<typeof formSchema>
@@ -39,7 +41,8 @@ const LoginForm = () => {
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
-      password: ''
+      password: '',
+      rememberMe: false
     }
   })
 
@@ -52,11 +55,11 @@ const LoginForm = () => {
   }, [isAuthenticated, navigate])
 
   const onSubmit = async (values: LoginFormValues) => {
-    const { email, password } = values
+    const { email, password, rememberMe } = values
     setIsSubmit(true)
 
     try {
-      const res = await callLogin(email, password)
+      const res = await callLogin(email, password, rememberMe)
       const backendRes = res.data
 
       if (backendRes.success && backendRes.data) {
@@ -164,6 +167,27 @@ const LoginForm = () => {
                 </div>
                 {errors.password && <p className="mt-1 text-xs font-bold text-rose-500">{errors.password.message}</p>}
               </Field>
+
+              {/* Ghi nhớ đăng nhập */}
+              <div className="flex items-center space-x-2 py-1">
+                <Controller
+                  name="rememberMe"
+                  control={form.control}
+                  render={({ field }) => (
+                    <Checkbox
+                      id="rememberMe"
+                      checked={field.value}
+                      onCheckedChange={field.onChange}
+                    />
+                  )}
+                />
+                <label
+                  htmlFor="rememberMe"
+                  className="text-xs font-semibold text-muted-foreground select-none cursor-pointer hover:text-foreground transition-colors"
+                >
+                  Ghi nhớ đăng nhập
+                </label>
+              </div>
 
               {/* Nút đăng nhập */}
               <Field className="pt-2">

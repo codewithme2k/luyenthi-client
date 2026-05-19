@@ -11,6 +11,12 @@ interface ExamResultProps {
   timeSpent: number; // in seconds
   sessionId?: string;
   onBackToExams: () => void;
+  serverResult?: {
+    score: number;
+    correct: number;
+    incorrect: number;
+    pending: number;
+  };
 }
 
 export const ExamResult: React.FC<ExamResultProps> = ({ 
@@ -19,10 +25,21 @@ export const ExamResult: React.FC<ExamResultProps> = ({
   answers, 
   timeSpent,
   sessionId,
-  onBackToExams 
+  onBackToExams,
+  serverResult
 }) => {
   const navigate = useNavigate();
   const result = useMemo(() => {
+    if (serverResult) {
+      return {
+        correct: serverResult.correct,
+        incorrect: serverResult.incorrect,
+        pending: serverResult.pending,
+        score: serverResult.score,
+        isPassed: serverResult.score >= exam.passMarks
+      };
+    }
+
     let correct = 0;
     let incorrect = 0;
     let pending = 0; // For ESSAY/FILL_BLANK
@@ -61,7 +78,7 @@ export const ExamResult: React.FC<ExamResultProps> = ({
     const isPassed = score >= exam.passMarks;
 
     return { correct, incorrect, pending, score, isPassed };
-  }, [questions, answers, exam.totalMarks, exam.passMarks]);
+  }, [questions, answers, exam.totalMarks, exam.passMarks, serverResult]);
 
   const formatTime = (seconds: number) => {
     const m = Math.floor(seconds / 60);

@@ -4,7 +4,6 @@ import { callFetchCourses, callFetchCategory } from "@/config/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
-  BookOpen, 
   Search, 
   Sparkles,
   ChevronLeft,

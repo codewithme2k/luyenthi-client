@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useAppDispatch, useAppSelector } from "@/redux/hooks";
-import { fetchQuestion, createQuestion, updateQuestion, deleteQuestion } from "@/redux/slice/questionSlice";
+import { fetchQuestion, createQuestion, updateQuestion, deleteQuestion, bulkDeleteQuestions } from "@/redux/slice/questionSlice";
 import { fetchExam } from "@/redux/slice/examSlice";
 import { Button } from "@/components/ui/button";
 import {
@@ -514,10 +514,15 @@ export default function QuestionPage() {
   const [openModal, setOpenModal] = useState(false);
   const [openBulkModal, setOpenBulkModal] = useState(false);
   const [dataUpdate, setDataUpdate] = useState<IQuestion | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   useEffect(() => {
     dispatch(fetchExam({ query: "limit=1000" }));
   }, [dispatch]);
+
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [page, searchTerm, selectedExamId]);
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -551,6 +556,17 @@ export default function QuestionPage() {
       loadQuestions();
     } catch {
       toast.error("Failed to delete question");
+    }
+  };
+
+  const handleBulkDelete = async () => {
+    try {
+      await dispatch(bulkDeleteQuestions({ ids: selectedIds })).unwrap();
+      toast.success("Bulk deletion completed successfully");
+      setSelectedIds([]);
+      loadQuestions();
+    } catch {
+      toast.error("Failed to perform bulk deletion");
     }
   };
 
@@ -604,6 +620,27 @@ export default function QuestionPage() {
               className="pl-8"
             />
           </div>
+          {selectedIds.length > 0 && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="destructive">
+                  <Trash2 className="w-4 h-4 mr-2" /> Xóa hàng loạt ({selectedIds.length})
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Xóa hàng loạt câu hỏi?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Hành động này không thể hoàn tác. Việc này sẽ xóa vĩnh viễn {selectedIds.length} câu hỏi đã chọn cùng với các câu trả lời liên quan.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Hủy</AlertDialogCancel>
+                  <AlertDialogAction onClick={handleBulkDelete}>Tiếp tục</AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
           <Button variant="outline" onClick={() => setOpenBulkModal(true)}>
             <Upload className="w-4 h-4 mr-2" /> Bulk Import
           </Button>
@@ -620,6 +657,23 @@ export default function QuestionPage() {
         <Table>
           <TableHeader>
             <TableRow>
+              <TableHead className="w-[50px]">
+                <Checkbox
+                  checked={questions.length > 0 && questions.every((q) => selectedIds.includes(q.id))}
+                  onCheckedChange={(checked) => {
+                    if (checked) {
+                      const newSelected = [...selectedIds];
+                      questions.forEach((q) => {
+                        if (!newSelected.includes(q.id)) newSelected.push(q.id);
+                      });
+                      setSelectedIds(newSelected);
+                    } else {
+                      const currentPageIds = questions.map((q) => q.id);
+                      setSelectedIds((prev) => prev.filter((id) => !currentPageIds.includes(id)));
+                    }
+                  }}
+                />
+              </TableHead>
               <TableHead className="w-[10%]">Order</TableHead>
               <TableHead className="w-[40%]">Question Content</TableHead>
               <TableHead>Type</TableHead>
@@ -630,13 +684,25 @@ export default function QuestionPage() {
           <TableBody>
             {questions.length === 0 && !isFetching ? (
               <TableRow>
-                <TableCell colSpan={5} className="text-center py-8 text-muted-foreground">
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
                   No questions found.
                 </TableCell>
               </TableRow>
             ) : (
               questions.map((question) => (
                 <TableRow key={question.id}>
+                  <TableCell>
+                    <Checkbox
+                      checked={selectedIds.includes(question.id)}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedIds((prev) => [...prev, question.id]);
+                        } else {
+                          setSelectedIds((prev) => prev.filter((id) => id !== question.id));
+                        }
+                      }}
+                    />
+                  </TableCell>
                   <TableCell className="font-mono text-xs">{question.order}</TableCell>
                   <TableCell className="max-w-[400px]">
                     <p className="truncate font-medium" title={question.content}>

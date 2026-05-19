@@ -18,10 +18,11 @@ export const callRegister = (
   })
 }
 
-export const callLogin = (email: string, password: string) => {
+export const callLogin = (email: string, password: string, rememberMe?: boolean) => {
   return axios.post('/api/v1/auth/login', {
     email,
-    password
+    password,
+    rememberMe
   })
 }
 
@@ -186,6 +187,10 @@ export const callUpdateQuestion = (question: any, id: string) => {
 }
 export const callDeleteQuestion = (id: string) => {
   return axios.delete(`/api/v1/question/${id}`)
+}
+
+export const callBulkDeleteQuestions = (ids: string[]) => {
+  return axios.post('/api/v1/question/bulk-delete', { ids })
 }
 
 // Membership Request

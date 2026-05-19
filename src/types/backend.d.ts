@@ -60,6 +60,7 @@ export interface ICreateUser {
   name: string;
   email: string;
   password?: string;
+  role?: string;
   age: number;
   gender: string;
   address: string;

@@ -1,0 +1,68 @@
+[
+  {
+    "title": "Chương 1: Kiến thức nền tảng và Phương pháp học",
+    "order": 1,
+    "lessons": [
+      {
+        "title": "Bài 1: Giới thiệu khóa học và Nội quy lớp học",
+        "order": 1,
+        "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "googleDocUrl": "",
+        "content": "Bài học này giúp bạn làm quen với cấu trúc khóa học, phương pháp tự ôn luyện hiệu quả và các cam kết cần có để đạt điểm cao.",
+        "isFree": true
+      },
+      {
+        "title": "Bài 2: Tài liệu hướng dẫn cài đặt và chuẩn bị công cụ",
+        "order": 2,
+        "videoUrl": "",
+        "googleDocUrl": "https://docs.google.com/document/d/e/2PACX-1vSb-S49h9X-wLdI7F6Z4a8vF8c-2u_P2U9Hh210mB9Wd/pub?embedded=true",
+        "content": "Hướng dẫn chi tiết các bước cài đặt phần mềm, liên kết nhóm học tập trực tuyến và tải tài liệu bổ trợ chính thức.",
+        "isFree": false
+      }
+    ]
+  },
+  {
+    "title": "Chương 2: Tư duy logic và Các dạng bài cốt lõi",
+    "order": 2,
+    "lessons": [
+      {
+        "title": "Bài 3: Video bài giảng tư duy giải đề nhanh",
+        "order": 1,
+        "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "googleDocUrl": "",
+        "content": "Video chia sẻ các mẹo nhận biết nhanh câu hỏi bẫy, cách phân bổ thời gian làm bài hợp lý để tối ưu điểm số.",
+        "isFree": true
+      },
+      {
+        "title": "Bài 4: Tài liệu đọc hiểu chuyên sâu dạng bài thi mẫu",
+        "order": 2,
+        "videoUrl": "",
+        "googleDocUrl": "https://docs.google.com/document/d/e/2PACX-1vSb-S49h9X-wLdI7F6Z4a8vF8c-2u_P2U9Hh210mB9Wd/pub?embedded=true",
+        "content": "Phân tích chi tiết 10 dạng câu hỏi thường gặp nhất trong các kỳ thi chính thức gần đây kèm lời giải mẫu.",
+        "isFree": false
+      }
+    ]
+  },
+  {
+    "title": "Chương 3: Ôn tập tổng hợp và Luyện đề thực tế",
+    "order": 3,
+    "lessons": [
+      {
+        "title": "Bài 5: Hướng dẫn giải đề thi thử số 1",
+        "order": 1,
+        "videoUrl": "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+        "googleDocUrl": "",
+        "content": "Video chữa chi tiết đề thi thử đầu tiên, chỉ ra các lỗi sai phổ biến mà học sinh thường mắc phải.",
+        "isFree": false
+      },
+      {
+        "title": "Bài 6: Đề thi khảo sát năng lực tổng hợp (Tải về)",
+        "order": 2,
+        "videoUrl": "",
+        "googleDocUrl": "https://docs.google.com/document/d/e/2PACX-1vSb-S49h9X-wLdI7F6Z4a8vF8c-2u_P2U9Hh210mB9Wd/pub?embedded=true",
+        "content": "Đề thi thử gồm 50 câu trắc nghiệm bao quát toàn bộ chương trình học giúp đánh giá chính xác học lực hiện tại.",
+        "isFree": false
+      }
+    ]
+  }
+]
