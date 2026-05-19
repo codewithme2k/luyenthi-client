@@ -234,5 +234,3 @@ export const callDeleteCourse = (id: string) => {
 export const callBulkUploadSyllabus = (courseId: string, syllabusData: any[]) => {
   return axios.post(`/api/v1/course/${courseId}/bulk-syllabus`, syllabusData)
 }
-
-

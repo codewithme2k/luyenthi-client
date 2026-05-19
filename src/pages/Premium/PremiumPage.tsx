@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useAppSelector, useAppDispatch } from '@/redux/hooks'
 import { callCreateMembershipRequest, callFetchMyMembershipRequests } from '@/config/api'
+import { premiumPlans } from '@/config/utils'
 import { toast } from 'sonner'
 import { fetchAccount } from '@/redux/slice/accountSlice'
 
@@ -30,35 +31,9 @@ export const PremiumPage: React.FC = () => {
   const [myRequests, setMyRequests] = useState<IRequestHistory[]>([])
   const [isLoadingHistory, setIsLoadingHistory] = useState(false)
 
-  const plans = [
-    {
-      code: 'ONE_MONTH' as const,
-      name: '1 Tháng',
-      price: 99000,
-      originalPrice: 99000,
-      description: 'Phù hợp để ôn thi ngắn hạn, làm quen với đề thi chất lượng cao.',
-      save: 0
-    },
-    {
-      code: 'SIX_MONTHS' as const,
-      name: '6 Tháng',
-      price: 499000,
-      originalPrice: 594000,
-      description: 'Lựa chọn tiết kiệm cho một học kỳ ôn tập đầy đủ và hiệu quả.',
-      save: 16
-    },
-    {
-      code: 'ONE_YEAR' as const,
-      name: '1 Năm',
-      price: 899000,
-      originalPrice: 1188000,
-      description: 'Lựa chọn tốt nhất! Đảm bảo trọn gói ôn thi đỗ đại học/thi chuyển cấp.',
-      save: 24,
-      popular: true
-    }
-  ]
+  const plans = premiumPlans
 
-  const selectedPlanDetails = plans.find(p => p.code === selectedPlan)!
+  const selectedPlanDetails = plans.find((p) => p.code === selectedPlan)!
 
   const loadHistory = async () => {
     setIsLoadingHistory(true)
@@ -75,7 +50,11 @@ export const PremiumPage: React.FC = () => {
   }
 
   useEffect(() => {
-    loadHistory()
+    const initialize = async () => {
+      await loadHistory()
+    }
+
+    void initialize()
   }, [])
 
   const copyToClipboard = (text: string) => {
@@ -110,8 +89,12 @@ export const PremiumPage: React.FC = () => {
       } else {
         toast.error(res.data?.message || 'Có lỗi xảy ra!')
       }
-    } catch (error: any) {
-      toast.error(error.response?.data?.message || 'Lỗi khi gửi yêu cầu. Vui lòng kiểm tra lại!')
+    } catch (error: unknown) {
+      const errorMessage =
+        typeof error === 'object' && error !== null && 'response' in error
+          ? (error as { response?: { data?: { message?: string } } }).response?.data?.message
+          : undefined
+      toast.error(errorMessage || 'Lỗi khi gửi yêu cầu. Vui lòng kiểm tra lại!')
     } finally {
       setIsSubmitting(false)
     }
@@ -132,23 +115,21 @@ export const PremiumPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background page-bg pt-24 pb-20 px-4 md:px-6">
-      <div className="max-w-[1200px] mx-auto">
-        
+    <div className='min-h-screen bg-background page-bg pt-24 pb-20 px-4 md:px-6'>
+      <div className='max-w-300 mx-auto'>
         {/* Banner Section */}
         <PremiumHero user={user} formatDate={formatDate} />
 
         {/* main container */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-16">
-          
+        <div className='grid grid-cols-1 lg:grid-cols-3 gap-8 items-start mb-16'>
           {/* Plan Options Column (Left/Center) */}
-          <div className="lg:col-span-2 space-y-6">
-            <PlanOptions 
+          <div className='lg:col-span-2 space-y-6'>
+            <PlanOptions
               plans={plans}
               selectedPlan={selectedPlan}
               onSelectPlan={(plan) => {
-                setSelectedPlan(plan);
-                setStep(1);
+                setSelectedPlan(plan)
+                setStep(1)
               }}
               formatPrice={formatPrice}
             />
@@ -158,8 +139,8 @@ export const PremiumPage: React.FC = () => {
           </div>
 
           {/* Billing & Bank Transfer Column (Right) */}
-          <div className="lg:col-span-1">
-            <PaymentSidebar 
+          <div className='lg:col-span-1'>
+            <PaymentSidebar
               selectedPlan={selectedPlan}
               selectedPlanDetails={selectedPlanDetails}
               formatPrice={formatPrice}
@@ -177,16 +158,15 @@ export const PremiumPage: React.FC = () => {
         </div>
 
         {/* Request History Section */}
-        <RequestHistory 
+        <RequestHistory
           myRequests={myRequests}
           isLoadingHistory={isLoadingHistory}
           formatPrice={formatPrice}
           formatDate={formatDate}
         />
-
       </div>
     </div>
   )
 }
 
-export default PremiumPage;
+export default PremiumPage

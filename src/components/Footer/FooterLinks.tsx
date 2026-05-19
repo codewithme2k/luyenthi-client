@@ -43,18 +43,16 @@ export const FooterLinks: React.FC = () => {
   ]
 
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12">
+    <div className='grid grid-cols-2 sm:grid-cols-3 gap-8 sm:gap-12'>
       {linkGroups.map((group) => (
-        <div key={group.title} className="space-y-4">
-          <h3 className="text-xs font-black text-foreground uppercase tracking-widest leading-none">
-            {group.title}
-          </h3>
-          <ul className="space-y-2.5">
+        <div key={group.title} className='space-y-4'>
+          <h3 className='text-xs font-black text-foreground uppercase tracking-widest leading-none'>{group.title}</h3>
+          <ul className='space-y-2.5'>
             {group.links.map((link) => (
               <li key={link.label}>
                 <Link
                   to={link.to}
-                  className="text-sm font-semibold text-muted-foreground hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors duration-200 block w-fit"
+                  className='text-sm font-semibold text-muted-foreground hover:text-indigo-500 dark:hover:text-indigo-400 transition-colors duration-200 block w-fit'
                 >
                   {link.label}
                 </Link>

@@ -14,12 +14,12 @@ const LayoutClient = () => {
   }, [location])
 
   return (
-    <div className="min-h-screen flex flex-col bg-background" ref={rootRef}>
+    <div className='min-h-screen flex flex-col bg-background' ref={rootRef}>
       <Header />
-      <main className="flex-grow">
+      <main className='flex-grow'>
         <Outlet />
       </main>
-      <Footer/>
+      <Footer />
     </div>
   )
 }

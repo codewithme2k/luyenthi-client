@@ -42,9 +42,7 @@
     "score": 1,
     "order": 4,
     "explanation": "Quang hợp diễn ra chủ yếu ở lá cây, nơi chứa nhiều lục lạp và chất diệp lục.",
-    "options": [
-      { "content": "lá cây", "isCorrect": true, "order": 1 }
-    ]
+    "options": [{ "content": "lá cây", "isCorrect": true, "order": 1 }]
   },
   {
     "content": "Hãy viết một đoạn văn ngắn nêu giải pháp cá nhân của em để giảm thiểu rác thải nhựa trong đời sống hàng ngày.",
@@ -96,9 +94,7 @@
     "score": 1,
     "order": 9,
     "explanation": "Cường độ dòng điện được đo bằng đơn vị Ampe (ký hiệu là A).",
-    "options": [
-      { "content": "Ampe", "isCorrect": true, "order": 1 }
-    ]
+    "options": [{ "content": "Ampe", "isCorrect": true, "order": 1 }]
   },
   {
     "content": "Phân tích ý nghĩa của câu tục ngữ 'Uống nước nhớ nguồn' đối với thế hệ trẻ ngày nay.",
@@ -150,9 +146,7 @@
     "score": 1,
     "order": 14,
     "explanation": "Diện tích hình tròn được tính bằng công thức S = pi * r² (với số pi xấp xỉ 3,14).",
-    "options": [
-      { "content": "pi", "isCorrect": true, "order": 1 }
-    ]
+    "options": [{ "content": "pi", "isCorrect": true, "order": 1 }]
   },
   {
     "content": "Theo em, trí tuệ nhân tạo (AI) sẽ mang lại những cơ hội và thách thức gì cho ngành giáo dục?",
@@ -204,9 +198,7 @@
     "score": 1,
     "order": 19,
     "explanation": "Châu Nam Cực là nơi có nhiệt độ thấp kỷ lục và có lượng mưa vô cùng ít, được coi là một hoang mạc lạnh.",
-    "options": [
-      { "content": "Châu Nam Cực", "isCorrect": true, "order": 1 }
-    ]
+    "options": [{ "content": "Châu Nam Cực", "isCorrect": true, "order": 1 }]
   },
   {
     "content": "Tại sao việc bảo vệ sự đa dạng sinh học lại có ý nghĩa sống còn đối với sự cân bằng sinh thái trên Trái Đất?",
@@ -221,9 +213,7 @@
     "score": 1,
     "order": 21,
     "explanation": "Chiến dịch Điện Biên Phủ kết thúc thắng lợi vào ngày 7 tháng 5 năm 1954.",
-    "options": [
-      { "content": "1954", "isCorrect": true, "order": 1 }
-    ]
+    "options": [{ "content": "1954", "isCorrect": true, "order": 1 }]
   },
   {
     "content": "Write a short paragraph (50-80 words) describing the benefits of regular exercise (Hãy viết một đoạn văn ngắn khoảng 50-80 từ mô tả lợi ích của việc tập thể dục thường xuyên).",
@@ -238,9 +228,7 @@
     "score": 1,
     "order": 23,
     "explanation": "Australia (Úc) là quốc gia duy nhất chiếm lĩnh toàn bộ lục địa Úc.",
-    "options": [
-      { "content": "Australia", "isCorrect": true, "order": 1 }
-    ]
+    "options": [{ "content": "Australia", "isCorrect": true, "order": 1 }]
   },
   {
     "content": "Theo em, học sinh cần làm gì để rèn luyện thói quen tự học hiệu quả tại nhà?",
@@ -255,8 +243,6 @@
     "score": 1,
     "order": 25,
     "explanation": "Khí Nitơ (Nitrogen) chiếm khoảng 78% thể tích không khí.",
-    "options": [
-      { "content": "Nitơ", "isCorrect": true, "order": 1 }
-    ]
+    "options": [{ "content": "Nitơ", "isCorrect": true, "order": 1 }]
   }
 ]

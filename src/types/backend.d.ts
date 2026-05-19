@@ -1,152 +1,155 @@
 export interface IBackendRes<T> {
-  statusCode: number | string;
+  statusCode: number | string
   error?: {
-    path: string | number;
-    message: string;
-  };
-  success: boolean;
-  message: string;
+    path: string | number
+    message: string
+  }
+  success: boolean
+  message: string
   meta?: {
-    limit: number;
-    page: number;
-    total: number;
-  };
-  data?: T;
+    limit: number
+    page: number
+    total: number
+  }
+  data?: T
 }
 export interface IModelPaginate<T> {
   meta: {
-    limit: number;
-    page: number;
-    total: number;
-  };
-  data: T[];
+    limit: number
+    page: number
+    total: number
+  }
+  data: T[]
 }
 export interface IAccount {
-  accessToken: string;
-  refreshToken: string;
+  accessToken: string
+  refreshToken: string
   user: {
-    name: string;
-    id: string;
-    email: string;
-    role: string;
-  };
+    name: string
+    id: string
+    email: string
+    role: string
+  }
 }
 
 export interface IGetAccount {
-  id: string;
-  email: string;
-  name: string;
-  role: string;
-  isPremium?: boolean;
-  premiumUntil?: string;
+  id: string
+  email: string
+  name: string
+  role: string
+  isPremium?: boolean
+  premiumUntil?: string
 }
 
 export interface IUser {
-  id: string;
-  name: string;
-  email: string;
-  role?: string;
-  gender?: string;
-  address?: string;
-  age?: number;
-  contactNo?: string;
-  isPremium?: boolean;
-  premiumUntil?: string;
-  createdAt?: string;
-  updatedAt?: string;
-  isActive?: boolean;
+  id: string
+  name: string
+  email: string
+  role?: string
+  gender?: string
+  address?: string
+  age?: number
+  contactNo?: string
+  isPremium?: boolean
+  premiumUntil?: string
+  createdAt?: string
+  updatedAt?: string
+  isActive?: boolean
 }
 export interface ICreateUser {
-  name: string;
-  email: string;
-  password?: string;
-  role?: string;
-  age: number;
-  gender: string;
-  address: string;
-  contactNo?: string;
-  updatedAt?: string;
+  name: string
+  email: string
+  password?: string
+  role?: string
+  age: number
+  gender: string
+  address: string
+  contactNo?: string
+  updatedAt?: string
 }
 
 export interface ICategory {
-  id: string;
-  name: string;
-  slug: string;
-  createdAt?: string;
-  updatedAt?: string;
+  id: string
+  name: string
+  slug: string
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface IExam {
-  id: string;
-  title: string;
-  description?: string;
-  slug: string;
-  categoryId: string;
-  duration: number;
-  totalMarks: number;
-  passMarks: number;
-  isPublished: boolean;
-  isPremium: boolean;
-  createdAt?: string;
-  updatedAt?: string;
+  id: string
+  title: string
+  description?: string
+  slug: string
+  categoryId: string
+  category?: {
+    name?: string
+  }
+  duration: number
+  totalMarks: number
+  passMarks: number
+  isPublished: boolean
+  isPremium: boolean
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface IPost {
-  id: string;
-  title: string;
-  content: string;
-  slug: string;
-  thumbnail?: string;
-  isPublished: boolean;
-  authorId: string;
+  id: string
+  title: string
+  content: string
+  slug: string
+  thumbnail?: string
+  isPublished: boolean
+  authorId: string
   author?: {
-    id: string;
-    name: string;
-    email: string;
-    profileImg?: string;
-  };
-  likedBy?: any[];
-  savedBy?: any[];
-  createdAt?: string;
-  updatedAt?: string;
+    id: string
+    name: string
+    email: string
+    profileImg?: string
+  }
+  likedBy?: any[]
+  savedBy?: any[]
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface IAnswerOption {
-  id?: string;
-  content: string;
-  isCorrect: boolean;
-  order: number;
-  questionId?: string;
+  id?: string
+  content: string
+  isCorrect: boolean
+  order: number
+  questionId?: string
 }
 
 export interface IQuestion {
-  id: string;
-  content: string;
-  type: 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'FILL_BLANK' | 'ESSAY' | 'TRUE_FALSE' | 'MATCHING';
-  score?: number;
-  order: number;
-  explanation?: string;
-  examId: string;
-  options?: IAnswerOption[];
-  createdAt?: string;
-  updatedAt?: string;
+  id: string
+  content: string
+  type: 'SINGLE_CHOICE' | 'MULTIPLE_CHOICE' | 'FILL_BLANK' | 'ESSAY' | 'TRUE_FALSE' | 'MATCHING'
+  score?: number
+  order: number
+  explanation?: string
+  examId: string
+  options?: IAnswerOption[]
+  createdAt?: string
+  updatedAt?: string
 }
 
 export interface IMembershipRequest {
-  id: string;
-  userId: string;
+  id: string
+  userId: string
   user: {
-    id: string;
-    name: string;
-    email: string;
-    contactNo?: string;
-    isPremium?: boolean;
-    premiumUntil?: string;
-  };
-  plan: 'ONE_MONTH' | 'SIX_MONTHS' | 'ONE_YEAR';
-  amount: number;
-  status: 'PENDING' | 'APPROVED' | 'REJECTED';
-  transactionCode: string;
-  createdAt: string;
-  updatedAt: string;
+    id: string
+    name: string
+    email: string
+    contactNo?: string
+    isPremium?: boolean
+    premiumUntil?: string
+  }
+  plan: 'ONE_MONTH' | 'SIX_MONTHS' | 'ONE_YEAR'
+  amount: number
+  status: 'PENDING' | 'APPROVED' | 'REJECTED'
+  transactionCode: string
+  createdAt: string
+  updatedAt: string
 }

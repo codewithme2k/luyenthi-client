@@ -12,7 +12,7 @@ const RequireAuth: React.FC = () => {
   }
 
   if (!isAuthenticated) {
-    return <Navigate to="/login" replace />
+    return <Navigate to='/login' replace />
   }
 
   // Render the child routes if authenticated
