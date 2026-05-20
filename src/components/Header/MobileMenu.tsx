@@ -79,11 +79,10 @@ export const MobileMenu: React.FC = () => {
                 <Link
                   to='/'
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${
-                    currentPath === '/'
-                      ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
-                  }`}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${currentPath === '/'
+                    ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                    }`}
                 >
                   <Home className='w-4 h-4' />
                   <span>Trang Chủ</span>
@@ -91,11 +90,10 @@ export const MobileMenu: React.FC = () => {
                 <Link
                   to='/premium'
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors border border-transparent ${
-                    currentPath === '/premium'
-                      ? 'bg-amber-500/10 text-amber-500 border border-amber-500/15 shadow-xs'
-                      : 'text-amber-500 hover:bg-amber-500/5'
-                  }`}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors border border-transparent ${currentPath === '/premium'
+                    ? 'bg-amber-500/10 text-amber-500 border border-amber-500/15 shadow-xs'
+                    : 'text-amber-500 hover:bg-amber-500/5'
+                    }`}
                 >
                   <Crown className='w-4 h-4 fill-amber-500/10' />
                   <span>Gói Premium</span>
@@ -110,11 +108,10 @@ export const MobileMenu: React.FC = () => {
                 <Link
                   to='/courses'
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${
-                    currentPath === '/courses' || currentPath.startsWith('/course/')
-                      ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
-                  }`}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${currentPath.startsWith('/courses')
+                    ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                    }`}
                 >
                   <GraduationCap className='w-4 h-4 text-violet-500' />
                   <span>Khoá Học E-Learning</span>
@@ -122,11 +119,10 @@ export const MobileMenu: React.FC = () => {
                 <Link
                   to='/exams'
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${
-                    currentPath === '/exams' || currentPath.startsWith('/exam/')
-                      ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
-                  }`}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${currentPath === '/exams' || currentPath.startsWith('/exam/')
+                    ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                    }`}
                 >
                   <BookOpen className='w-4 h-4 text-sky-500' />
                   <span>Kho Đề Thi Trắc Nghiệm</span>
@@ -141,11 +137,10 @@ export const MobileMenu: React.FC = () => {
                 <Link
                   to='/leaderboard'
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${
-                    currentPath === '/leaderboard'
-                      ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
-                  }`}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${currentPath === '/leaderboard'
+                    ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                    }`}
                 >
                   <Trophy className='w-4 h-4 text-amber-500' />
                   <span>Bảng Vàng Danh Dự</span>
@@ -153,11 +148,10 @@ export const MobileMenu: React.FC = () => {
                 <Link
                   to='/blog'
                   onClick={() => setIsOpen(false)}
-                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${
-                    currentPath === '/blog' || currentPath.startsWith('/blog/')
-                      ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
-                  }`}
+                  className={`px-4 py-2.5 rounded-xl text-xs font-bold flex items-center gap-3 transition-colors ${currentPath === '/blog' || currentPath.startsWith('/blog/')
+                    ? 'bg-primary/10 text-primary border border-primary/15 shadow-xs'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted/40'
+                    }`}
                 >
                   <BookOpen className='w-4 h-4 text-violet-500' />
                   <span>Cẩm Nang Ôn Thi</span>
@@ -172,16 +166,14 @@ export const MobileMenu: React.FC = () => {
               <div className='space-y-4'>
                 {/* Logged In Info */}
                 <div
-                  className={`flex items-center gap-3 p-3 rounded-xl bg-muted/40 border ${
-                    user?.isPremium ? 'border-amber-500/35' : 'border-border'
-                  }`}
+                  className={`flex items-center gap-3 p-3 rounded-xl bg-muted/40 border ${user?.isPremium ? 'border-amber-500/35' : 'border-border'
+                    }`}
                 >
                   <div
-                    className={`w-9 h-9 rounded-lg border flex items-center justify-center ${
-                      user?.isPremium
-                        ? 'bg-amber-500/10 border-amber-500/25 text-amber-500'
-                        : 'bg-primary/10 border-primary/20 text-primary'
-                    }`}
+                    className={`w-9 h-9 rounded-lg border flex items-center justify-center ${user?.isPremium
+                      ? 'bg-amber-500/10 border-amber-500/25 text-amber-500'
+                      : 'bg-primary/10 border-primary/20 text-primary'
+                      }`}
                   >
                     {user?.isPremium ? (
                       <Crown className='w-5 h-5 fill-current' />
@@ -201,9 +193,8 @@ export const MobileMenu: React.FC = () => {
                       )}
                     </p>
                     <p
-                      className={`text-sm font-bold truncate leading-snug mt-1.5 ${
-                        user?.isPremium ? 'text-amber-500 font-extrabold' : 'text-foreground'
-                      }`}
+                      className={`text-sm font-bold truncate leading-snug mt-1.5 ${user?.isPremium ? 'text-amber-500 font-extrabold' : 'text-foreground'
+                        }`}
                     >
                       {user.name || user.email}
                     </p>

@@ -316,7 +316,7 @@ export const AdminCoursePage: React.FC = () => {
                   {/* Actions */}
                   <td className='p-4 text-right'>
                     <div className='flex items-center justify-end gap-1.5'>
-                      <Link to={`/admin/course/${course.id}/syllabus`}>
+                      <Link to={`/admin/courses/${course.id}/syllabus`}>
                         <Button
                           size='sm'
                           variant='outline'

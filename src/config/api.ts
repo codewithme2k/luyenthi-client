@@ -30,6 +30,10 @@ export const callFetchAccount = () => {
   return axios.get('/api/v1/user/profile')
 }
 
+export const callGetUserProgress = () => {
+  return axios.get('/api/v1/user/progress')
+}
+
 export const callRefreshToken = () => {
   return axios.post('/api/v1/auth/refresh')
 }
@@ -217,6 +221,14 @@ export const callFetchCourses = (query: string = '') => {
 
 export const callFetchCourseDetails = (idOrSlug: string) => {
   return axios.get(`/api/v1/course/${idOrSlug}`)
+}
+
+export const callFetchLessonDetails = (lessonId: string) => {
+  return axios.get(`/api/v1/course/lessons/${lessonId}`)
+}
+
+export const callToggleLessonProgress = (lessonId: string) => {
+  return axios.post(`/api/v1/course/lessons/${lessonId}/progress`)
 }
 
 export const callCreateCourse = (payload: any) => {

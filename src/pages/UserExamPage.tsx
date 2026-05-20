@@ -27,10 +27,7 @@ const UserExamPage: React.FC = () => {
   const searchTerm = searchParams.get('searchTerm') || ''
   const [debouncedSearch, setDebouncedSearch] = useState(searchTerm)
 
-  // Sync debounced search value with the URL param changes
-  useEffect(() => {
-    setDebouncedSearch(searchTerm)
-  }, [searchTerm])
+
   const [selectedCategoryId, setSelectedCategoryId] = useState<string | null>(null)
   const [page, setPage] = useState(1)
   const limit = 6 // Beautiful 3x2 grid

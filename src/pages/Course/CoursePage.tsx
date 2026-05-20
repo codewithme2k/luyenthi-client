@@ -133,11 +133,10 @@ export const CoursePage: React.FC = () => {
               setSelectedCategory('')
               setPage(1)
             }}
-            className={`px-4 py-2 rounded-xl text-xs font-extrabold border transition-all ${
-              selectedCategory === ''
+            className={`px-4 py-2 rounded-xl text-xs font-extrabold border transition-all ${selectedCategory === ''
                 ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                 : 'bg-background/40 hover:bg-muted/80 text-muted-foreground border-border'
-            }`}
+              }`}
           >
             Tất Cả Khoá Học
           </button>
@@ -148,11 +147,10 @@ export const CoursePage: React.FC = () => {
                 setSelectedCategory(cat.id)
                 setPage(1)
               }}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold border transition-all ${
-                selectedCategory === cat.id
+              className={`px-4 py-2 rounded-xl text-xs font-extrabold border transition-all ${selectedCategory === cat.id
                   ? 'bg-primary text-primary-foreground border-primary shadow-sm'
                   : 'bg-background/40 hover:bg-muted/80 text-muted-foreground border-border'
-              }`}
+                }`}
             >
               {cat.name}
             </button>
@@ -181,11 +179,10 @@ export const CoursePage: React.FC = () => {
                 <div
                   key={course.id}
                   style={{ animationDelay: `${idx * 0.05}s` }}
-                  className={`group bg-card rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col h-full overflow-hidden ${
-                    course.isPremium
+                  className={`group bg-card rounded-2xl border transition-all duration-300 hover:-translate-y-1 hover:shadow-lg flex flex-col h-full overflow-hidden ${course.isPremium
                       ? 'border-amber-500/20 hover:border-amber-500/50'
                       : 'border-border hover:border-primary/45'
-                  }`}
+                    }`}
                 >
                   {/* Thumbnail */}
                   <div className='aspect-video w-full overflow-hidden relative bg-muted/40'>
@@ -226,12 +223,11 @@ export const CoursePage: React.FC = () => {
                         <span>{course._count?.chapters || 0} Chương Học</span>
                       </div>
 
-                      <Link to={`/course/${course.slug}`}>
+                      <Link to={`/courses/${course.slug}`}>
                         <Button
                           size='sm'
-                          className={`rounded-lg cursor-pointer font-bold text-xs ${
-                            course.isPremium ? 'bg-amber-500 hover:bg-amber-600 text-amber-950' : 'btn-premium'
-                          }`}
+                          className={`rounded-lg cursor-pointer font-bold text-xs ${course.isPremium ? 'bg-amber-500 hover:bg-amber-600 text-amber-950' : 'btn-premium'
+                            }`}
                         >
                           <PlayCircle className='w-3.5 h-3.5 mr-1' />
                           Học Ngay

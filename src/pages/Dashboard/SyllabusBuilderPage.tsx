@@ -318,7 +318,7 @@ export const SyllabusBuilderPage: React.FC = () => {
       <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4'>
         <div>
           <Link
-            to='/admin/course'
+            to='/admin/courses'
             className='inline-flex items-center gap-1 text-xs font-bold text-muted-foreground hover:text-foreground mb-2'
           >
             <ArrowLeft className='w-4 h-4' /> Quay lại Quản lý khoá học
@@ -538,12 +538,12 @@ export const SyllabusBuilderPage: React.FC = () => {
                 <FileJson className='w-5 h-5 text-violet-500 animate-pulse' />
                 Nạp Giáo Trình Bằng JSON
               </h3>
-              <button
-                onClick={() => setShowJsonModal(false)}
-                className='w-7 h-7 rounded-lg border flex items-center justify-center hover:bg-muted/80 cursor-pointer'
+              <Link
+                to='/admin/courses'
+                className='w-8 h-8 rounded-xl border flex items-center justify-center hover:bg-muted/50 transition-colors shrink-0'
               >
                 <X className='w-4 h-4' />
-              </button>
+              </Link>
             </div>
 
             <div className='p-6 space-y-4 text-sm font-semibold'>

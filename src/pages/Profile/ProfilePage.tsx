@@ -8,6 +8,7 @@ import {
   callUpdateProfile,
   callUploadFile,
   callGetSavedPosts,
+  callGetUserProgress,
   callChangePassword
 } from '@/config/api'
 import { updateAccount } from '@/redux/slice/accountSlice'
@@ -15,11 +16,12 @@ import type { IPost } from '@/types/backend'
 import type { IExamSession, ProfileFormValues } from '@/types/profile'
 import ProfileAnalytics from '@/components/Client/Profile/ProfileAnalytics'
 import ProfileHistory from '@/components/Client/Profile/ProfileHistory'
+import ProfileCourseProgress from '@/components/Client/Profile/ProfileCourseProgress'
 import ProfileSavedPosts from '@/components/Client/Profile/ProfileSavedPosts'
 import ProfileDetailsForm from '@/components/Client/Profile/ProfileDetailsForm'
 import ProfileSecurityForm from '@/components/Client/Profile/ProfileSecurityForm'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { History, TrendingUp, Bookmark, User, Lock } from 'lucide-react'
+import { History, TrendingUp, Bookmark, User, Lock, BookOpen } from 'lucide-react'
 import Loading from '@/components/Layout/Loading'
 
 type AxiosErrorLike = {
@@ -46,6 +48,13 @@ export default function ProfilePage() {
 
   const [savedPosts, setSavedPosts] = useState<IPost[]>([])
   const [isLoadingSaved, setIsLoadingSaved] = useState(false)
+
+  // Course Progress State
+  const [userProgress, setUserProgress] = useState<{
+    courses: any[]
+    summary: { examsCompleted: number; coursesStarted: number; lessonsCompleted: number }
+  } | null>(null)
+  const [isLoadingProgress, setIsLoadingProgress] = useState(false)
 
   // States for Change Password Form
   const [currentPassword, setCurrentPassword] = useState('')
@@ -90,9 +99,9 @@ export default function ProfilePage() {
     } catch (error) {
       const errorMsg =
         error &&
-        typeof error === 'object' &&
-        'response' in error &&
-        typeof (error as AxiosErrorLike).response?.data?.message === 'string'
+          typeof error === 'object' &&
+          'response' in error &&
+          typeof (error as AxiosErrorLike).response?.data?.message === 'string'
           ? (error as AxiosErrorLike).response?.data?.message
           : 'Mật khẩu hiện tại không chính xác!'
       toast.error(errorMsg, { id: toastId })
@@ -167,6 +176,18 @@ export default function ProfilePage() {
         toast.error('Lỗi khi lấy danh sách lịch sử thi.')
       }
 
+      setIsLoadingProgress(true)
+      try {
+        const progressRes = await callGetUserProgress()
+        if (progressRes.data?.success) {
+          setUserProgress(progressRes.data.data)
+        }
+      } catch (error) {
+        console.error('Lỗi khi lấy tiến trình học tập:', error)
+      } finally {
+        setIsLoadingProgress(false)
+      }
+
       try {
         const savedRes = await callGetSavedPosts()
         if (savedRes.data?.success) {
@@ -229,6 +250,12 @@ export default function ProfilePage() {
             <History className='w-4 h-4' /> Lịch sử thi
           </TabsTrigger>
           <TabsTrigger
+            value='progress'
+            className='rounded-lg border border-transparent px-6 py-2.5 flex items-center gap-2 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-sm cursor-pointer'
+          >
+            <BookOpen className='w-4 h-4' /> Tiến trình học
+          </TabsTrigger>
+          <TabsTrigger
             value='analytics'
             className='rounded-lg border border-transparent px-6 py-2.5 flex items-center gap-2 data-[state=active]:border-primary data-[state=active]:bg-primary/10 data-[state=active]:text-primary data-[state=active]:shadow-sm cursor-pointer'
           >
@@ -260,6 +287,18 @@ export default function ProfilePage() {
 
         <TabsContent value='history' className='animate-fade-in outline-none'>
           <ProfileHistory sessions={sessions} isLoading={isLoadingHistory} navigate={navigate} />
+        </TabsContent>
+
+        <TabsContent value='progress' className='animate-fade-in outline-none'>
+          {isLoadingProgress ? (
+            <div className='flex justify-center p-12'><Loading /></div>
+          ) : (
+            <ProfileCourseProgress
+              courses={userProgress?.courses || []}
+              summary={userProgress?.summary || { examsCompleted: 0, coursesStarted: 0, lessonsCompleted: 0 }}
+              navigate={navigate}
+            />
+          )}
         </TabsContent>
 
         <TabsContent value='saved' className='animate-fade-in outline-none'>

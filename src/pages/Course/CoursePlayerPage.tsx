@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router'
-import { callFetchCourseDetails } from '@/config/api'
+import { callFetchCourseDetails, callFetchLessonDetails, callToggleLessonProgress } from '@/config/api'
 import { useAppSelector } from '@/redux/hooks'
 import { Button } from '@/components/ui/button'
 import {
@@ -63,6 +63,20 @@ export const CoursePlayerPage: React.FC = () => {
   const [completedLessons, setCompletedLessons] = useState<string[]>([])
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [notesText, setNotesText] = useState('')
+
+  const handleLessonSelect = async (lesson: ILesson) => {
+    try {
+      const res = await callFetchLessonDetails(lesson.id)
+      if (res.data && res.data.data) {
+        setActiveLesson(res.data.data)
+      } else {
+        setActiveLesson(lesson)
+      }
+    } catch (error) {
+      console.error('Failed to fetch lesson details', error)
+      setActiveLesson(lesson)
+    }
+  }
 
   // Load lesson notes when active lesson changes
   useEffect(() => {
@@ -140,16 +154,27 @@ export const CoursePlayerPage: React.FC = () => {
   }, [course])
 
   // Toggle lesson completion state
-  const toggleLessonCompletion = (lessonId: string) => {
+  const toggleLessonCompletion = async (lessonId: string) => {
     if (!course) return
 
     let updated: string[]
-    if (completedLessons.includes(lessonId)) {
-      updated = completedLessons.filter((id) => id !== lessonId)
-      toast.success('Đã hủy đánh dấu hoàn thành bài học.')
-    } else {
+    const isNowCompleted = !completedLessons.includes(lessonId)
+
+    if (isNowCompleted) {
       updated = [...completedLessons, lessonId]
       toast.success('Chúc mừng! Bạn đã hoàn thành bài học này. 🎉')
+    } else {
+      updated = completedLessons.filter((id) => id !== lessonId)
+      toast.success('Đã hủy đánh dấu hoàn thành bài học.')
+    }
+
+    setCompletedLessons(updated)
+
+    // Fire API call in background
+    if (isAuthenticated) {
+      callToggleLessonProgress(lessonId).catch((err) => {
+        console.error('Failed to sync lesson progress', err)
+      })
     }
 
     setCompletedLessons(updated)
@@ -227,7 +252,7 @@ export const CoursePlayerPage: React.FC = () => {
 
           setExpandedChapters(initialExpanded)
           if (targetLesson) {
-            setActiveLesson(targetLesson)
+            handleLessonSelect(targetLesson)
           }
         }
       } catch (err) {
@@ -287,12 +312,12 @@ export const CoursePlayerPage: React.FC = () => {
 
     if (direction === 'next' && currentIndex < flat.length - 1) {
       const nextItem = flat[currentIndex + 1]
-      setActiveLesson(nextItem.lesson)
+      handleLessonSelect(nextItem.lesson)
       // Auto expand next chapter if collapsed
       setExpandedChapters((prev) => ({ ...prev, [nextItem.chapterId]: true }))
     } else if (direction === 'prev' && currentIndex > 0) {
       const prevItem = flat[currentIndex - 1]
-      setActiveLesson(prevItem.lesson)
+      handleLessonSelect(prevItem.lesson)
       // Auto expand prev chapter if collapsed
       setExpandedChapters((prev) => ({ ...prev, [prevItem.chapterId]: true }))
     }
@@ -432,22 +457,20 @@ export const CoursePlayerPage: React.FC = () => {
                   <div className='absolute top-3 right-3 z-30 flex items-center bg-black/60 backdrop-blur-md border border-white/10 rounded-lg p-1 gap-1 shadow-lg'>
                     <button
                       onClick={() => setPlayerMode('video')}
-                      className={`text-[10px] font-black px-2.5 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1 ${
-                        playerMode === 'video'
-                          ? 'bg-primary text-primary-foreground animate-none'
-                          : 'text-white hover:bg-white/10'
-                      }`}
+                      className={`text-[10px] font-black px-2.5 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1 ${playerMode === 'video'
+                        ? 'bg-primary text-primary-foreground animate-none'
+                        : 'text-white hover:bg-white/10'
+                        }`}
                     >
                       <Tv className='w-3 h-3' />
                       <span>Video</span>
                     </button>
                     <button
                       onClick={() => setPlayerMode('doc')}
-                      className={`text-[10px] font-black px-2.5 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1 ${
-                        playerMode === 'doc'
-                          ? 'bg-primary text-primary-foreground animate-none'
-                          : 'text-white hover:bg-white/10'
-                      }`}
+                      className={`text-[10px] font-black px-2.5 py-1 rounded-md transition-all cursor-pointer flex items-center gap-1 ${playerMode === 'doc'
+                        ? 'bg-primary text-primary-foreground animate-none'
+                        : 'text-white hover:bg-white/10'
+                        }`}
                     >
                       <BookOpen className='w-3 h-3' />
                       <span>Tài Liệu</span>
@@ -520,11 +543,10 @@ export const CoursePlayerPage: React.FC = () => {
                 variant={completedLessons.includes(activeLesson.id) ? 'default' : 'outline'}
                 size='sm'
                 onClick={() => toggleLessonCompletion(activeLesson.id)}
-                className={`rounded-xl font-bold text-xs cursor-pointer transition-all duration-300 ${
-                  completedLessons.includes(activeLesson.id)
-                    ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 hover:text-white shadow-md shadow-emerald-600/10'
-                    : 'border-border hover:bg-emerald-500/10 hover:text-emerald-600 hover:border-emerald-500/30'
-                }`}
+                className={`rounded-xl font-bold text-xs cursor-pointer transition-all duration-300 ${completedLessons.includes(activeLesson.id)
+                  ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 hover:text-white shadow-md shadow-emerald-600/10'
+                  : 'border-border hover:bg-emerald-500/10 hover:text-emerald-600 hover:border-emerald-500/30'
+                  }`}
               >
                 <CheckCircle2
                   className={`w-4 h-4 mr-1.5 ${completedLessons.includes(activeLesson.id) ? 'fill-white text-emerald-600' : ''}`}
@@ -551,11 +573,10 @@ export const CoursePlayerPage: React.FC = () => {
           <div className='flex gap-2 border-b border-border pb-px overflow-x-auto scrollbar-none'>
             <button
               onClick={() => setActiveTab('video')}
-              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${
-                activeTab === 'video'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
+              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${activeTab === 'video'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
             >
               <span className='flex items-center gap-1.5'>
                 <FileText className='w-4 h-4' /> Nội Dung Bài Học
@@ -563,11 +584,10 @@ export const CoursePlayerPage: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('notes')}
-              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${
-                activeTab === 'notes'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
+              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${activeTab === 'notes'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
             >
               <span className='flex items-center gap-1.5'>
                 <Clipboard className='w-4 h-4' /> Sổ Tay Ghi Chú
@@ -575,11 +595,10 @@ export const CoursePlayerPage: React.FC = () => {
             </button>
             <button
               onClick={() => setActiveTab('info')}
-              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${
-                activeTab === 'info'
-                  ? 'border-primary text-primary'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
+              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${activeTab === 'info'
+                ? 'border-primary text-primary'
+                : 'border-transparent text-muted-foreground hover:text-foreground'
+                }`}
             >
               <span className='flex items-center gap-1.5'>
                 <HelpCircle className='w-4 h-4' /> Mô Tả Khoá Học
@@ -719,12 +738,11 @@ export const CoursePlayerPage: React.FC = () => {
                             return (
                               <button
                                 key={lesson.id}
-                                onClick={() => setActiveLesson(lesson)}
-                                className={`w-full flex items-center justify-between px-5 py-3.5 transition-all text-left cursor-pointer ${
-                                  isActive
-                                    ? 'bg-primary/10 border-l-2 border-primary text-primary'
-                                    : 'hover:bg-muted/40 text-muted-foreground hover:text-foreground'
-                                }`}
+                                onClick={() => handleLessonSelect(lesson)}
+                                className={`w-full flex items-center justify-between px-5 py-3.5 transition-all text-left cursor-pointer ${isActive
+                                  ? 'bg-primary/10 border-l-2 border-primary text-primary'
+                                  : 'hover:bg-muted/40 text-muted-foreground hover:text-foreground'
+                                  }`}
                               >
                                 <div className='flex items-start gap-2.5 flex-1 min-w-0'>
                                   {lessonLocked ? (

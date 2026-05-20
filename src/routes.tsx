@@ -32,6 +32,7 @@ import { CoursePage } from '@/pages/Course/CoursePage'
 import { CoursePlayerPage } from '@/pages/Course/CoursePlayerPage'
 import { AdminCoursePage } from '@/pages/Dashboard/AdminCoursePage'
 import { SyllabusBuilderPage } from '@/pages/Dashboard/SyllabusBuilderPage'
+import NoHeaderLayout from '@/components/Layout/NoHeaderLayout'
 
 const routes = createBrowserRouter([
   {
@@ -53,6 +54,26 @@ const routes = createBrowserRouter([
     path: '/reset-password',
     element: <ResetPasswordPage />,
     handle: { title: 'Đặt lại mật khẩu' }
+  },
+  {
+    element: (
+      <LayoutApp>
+        <NoHeaderLayout />
+      </LayoutApp>
+    ),
+    errorElement: <NotFound />,
+    children: [
+      {
+        path: '/courses/:slug',
+        element: <CoursePlayerPage />,
+        handle: { title: 'Khóa học' }
+      },
+      {
+        path: '/exam/:slug',
+        element: <ExamTestPage />,
+        handle: { title: 'Luyện thi' }
+      }
+    ]
   },
   {
     path: '/',
@@ -94,18 +115,8 @@ const routes = createBrowserRouter([
         handle: { title: 'Khóa học online' }
       },
       {
-        path: 'course/:slug',
-        element: <CoursePlayerPage />,
-        handle: { title: 'Khóa học' }
-      },
-      {
         element: <RequireAuth />,
         children: [
-          {
-            path: 'exam/:slug',
-            element: <ExamTestPage />,
-            handle: { title: 'Luyện thi' }
-          },
           {
             path: 'exam-result/:sessionId',
             element: <ExamResultDetailsPage />,
@@ -180,12 +191,12 @@ const routes = createBrowserRouter([
         handle: { title: 'Yêu cầu kích hoạt thành viên' }
       },
       {
-        path: 'course',
+        path: 'courses',
         element: <AdminCoursePage />,
         handle: { title: 'Quản lý khóa học' }
       },
       {
-        path: 'course/:id/syllabus',
+        path: 'courses/:id/syllabus',
         element: <SyllabusBuilderPage />,
         handle: { title: 'Xây dựng giáo trình' }
       }

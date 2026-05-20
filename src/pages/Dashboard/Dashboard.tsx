@@ -478,7 +478,7 @@ export default function Dashboard() {
           </Link>
 
           <Link
-            to='/admin/course'
+            to='/admin/courses'
             className='flex flex-col items-center justify-center p-4 rounded-xl border border-border/80 bg-background/50 hover:bg-violet-500/5 hover:border-violet-500/30 transition-all text-center group cursor-pointer'
           >
             <div className='w-10 h-10 rounded-lg bg-violet-500/10 text-violet-500 flex items-center justify-center mb-2 group-hover:scale-110 transition-transform'>
@@ -641,11 +641,10 @@ export default function Dashboard() {
                         </span>
                         {session.isCompleted ? (
                           <span
-                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                              isPass
+                            className={`px-2 py-0.5 rounded text-[10px] font-bold ${isPass
                                 ? 'bg-emerald-500/10 text-emerald-600 border border-emerald-500/20'
                                 : 'bg-destructive/10 text-destructive border border-destructive/20'
-                            }`}
+                              }`}
                           >
                             {isPass ? 'ĐẠT' : 'TRƯỢT'}
                           </span>

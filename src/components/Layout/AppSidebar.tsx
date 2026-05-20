@@ -51,7 +51,7 @@ const items = [
   },
   {
     title: 'Quản Lý Khoá Học',
-    url: '/admin/course',
+    url: '/admin/courses',
     icon: GraduationCap
   },
   {
