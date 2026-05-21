@@ -8,7 +8,7 @@ import { store } from '@/redux/store.ts'
 import { ThemeProvider } from './components/ThemeProvider.tsx'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  <>
     <Provider store={store}>
       <ThemeProvider defaultTheme='dark' storageKey='vite-ui-theme'>
         <App />
@@ -31,5 +31,5 @@ createRoot(document.getElementById('root')!).render(
         gap={14}                    // Khoảng cách giữa các toast là 14px
       />
     </Provider>
-  </StrictMode>
+  </>
 )

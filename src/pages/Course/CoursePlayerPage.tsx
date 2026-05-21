@@ -4,52 +4,24 @@ import { callFetchCourseDetails, callFetchLessonDetails, callToggleLessonProgres
 import { useAppSelector } from '@/redux/hooks'
 import { Button } from '@/components/ui/button'
 import {
-  Play,
   Lock,
   Crown,
-  ChevronDown,
-  ChevronRight,
   BookOpen,
   ArrowLeft,
   ArrowRight,
   Tv,
-  FileText,
-  HelpCircle,
   CheckCircle2,
-  Clipboard,
-  PanelRightClose,
-  PanelRightOpen
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Loading from '@/components/Layout/Loading'
+import ReactPlayer from 'react-player'
+import { CourseHeader } from '@/components/CoursePlayer/CourseHeader'
+import { CourseSidebar } from '@/components/CoursePlayer/CourseSidebar'
+import { CourseTabArea } from '@/components/CoursePlayer/CourseTabArea'
+import type { ICourseDetails, ILesson } from '@/types/CoursePlayer'
 
-interface ILesson {
-  id: string
-  title: string
-  content: string | null
-  videoUrl: string | null
-  googleDocUrl?: string | null
-  order: number
-  isFree: boolean
-}
 
-interface IChapter {
-  id: string
-  title: string
-  order: number
-  lessons: ILesson[]
-}
 
-interface ICourseDetails {
-  id: string
-  title: string
-  description: string | null
-  slug: string
-  thumbnail: string | null
-  isPremium: boolean
-  chapters: IChapter[]
-  category?: { name: string; slug: string } | null
-}
 
 export const CoursePlayerPage: React.FC = () => {
   const { slug } = useParams<{ slug: string }>()
@@ -63,9 +35,11 @@ export const CoursePlayerPage: React.FC = () => {
   const [completedLessons, setCompletedLessons] = useState<string[]>([])
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
   const [notesText, setNotesText] = useState('')
+  const [hasWatchedEnough, setHasWatchedEnough] = useState(false)
 
   const handleLessonSelect = async (lesson: ILesson) => {
     try {
+      setHasWatchedEnough(false)
       const res = await callFetchLessonDetails(lesson.id)
       if (res.data && res.data.data) {
         setActiveLesson(res.data.data)
@@ -268,6 +242,9 @@ export const CoursePlayerPage: React.FC = () => {
   // Auto detect best media player view mode
   useEffect(() => {
     if (activeLesson) {
+      console.log('🔍 [DEBUG] activeLesson.videoUrl:', activeLesson.videoUrl)
+      console.log('🔍 [DEBUG] ReactPlayer component:', ReactPlayer)
+
       if (activeLesson.videoUrl) {
         setPlayerMode('video')
       } else if (activeLesson.googleDocUrl) {
@@ -283,12 +260,14 @@ export const CoursePlayerPage: React.FC = () => {
     }))
   }
 
-  const getYoutubeEmbedUrl = (url: string | null | undefined) => {
+  // Convert any YouTube link format to a standard watch URL for ReactPlayer
+  const getStandardYoutubeUrl = (url: string | null | undefined) => {
     if (!url) return ''
-    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+    if (url.includes('youtube.com/watch?v=')) return url
+    const regExp = /^.*(youtu\.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]{11}).*/
     const match = url.match(regExp)
     if (match && match[2].length === 11) {
-      return `https://www.youtube.com/embed/${match[2]}?autoplay=1&rel=0`
+      return `https://www.youtube.com/watch?v=${match[2]}`
     }
     return url
   }
@@ -305,6 +284,14 @@ export const CoursePlayerPage: React.FC = () => {
     return list
   }
 
+  const isLessonSequentiallyLocked = (lessonId: string): boolean => {
+    const flat = getFlatLessons()
+    const index = flat.findIndex((item) => item.lesson.id === lessonId)
+    if (index <= 0) return false
+    const prevLessonId = flat[index - 1].lesson.id
+    return !completedLessons.includes(prevLessonId)
+  }
+
   const navigateLesson = (direction: 'next' | 'prev') => {
     const flat = getFlatLessons()
     if (!activeLesson || flat.length === 0) return
@@ -312,6 +299,10 @@ export const CoursePlayerPage: React.FC = () => {
 
     if (direction === 'next' && currentIndex < flat.length - 1) {
       const nextItem = flat[currentIndex + 1]
+      if (isLessonSequentiallyLocked(nextItem.lesson.id)) {
+        toast.error('Vui lòng hoàn thành bài học hiện tại để học tiếp!')
+        return
+      }
       handleLessonSelect(nextItem.lesson)
       // Auto expand next chapter if collapsed
       setExpandedChapters((prev) => ({ ...prev, [nextItem.chapterId]: true }))
@@ -358,59 +349,12 @@ export const CoursePlayerPage: React.FC = () => {
 
   return (
     <div className='min-h-screen bg-background text-foreground flex flex-col'>
-      {/* Top Header bar */}
-      <div className='border-b border-border bg-card/50 backdrop-blur-md px-6 py-4 flex items-center justify-between'>
-        <div className='flex items-center gap-3'>
-          <Link
-            to='/courses'
-            className='w-9 h-9 rounded-xl border flex items-center justify-center hover:bg-muted/50 transition-colors'
-          >
-            <ArrowLeft className='w-5 h-5' />
-          </Link>
-          <div>
-            <span className='text-[10px] font-bold text-primary uppercase tracking-wider bg-primary/10 px-2 py-0.5 rounded border border-primary/20'>
-              {course.category?.name || 'E-Learning'}
-            </span>
-            <h1 className='text-sm sm:text-base font-extrabold text-foreground truncate max-w-[280px] sm:max-w-lg mt-0.5 leading-none'>
-              {course.title}
-            </h1>
-          </div>
-        </div>
-
-        <div className='flex items-center gap-3'>
-          {/* Collapsible Sidebar Button */}
-          <Button
-            variant='outline'
-            size='sm'
-            onClick={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
-            className='hidden lg:flex items-center gap-1.5 rounded-xl border-border font-bold text-xs h-9 cursor-pointer hover:bg-muted/50 transition-all'
-          >
-            {isSidebarCollapsed ? (
-              <>
-                <PanelRightOpen className='w-4 h-4 text-primary animate-pulse' />
-                <span>Hiện giáo trình</span>
-              </>
-            ) : (
-              <>
-                <PanelRightClose className='w-4 h-4 text-muted-foreground' />
-                <span>Ẩn giáo trình</span>
-              </>
-            )}
-          </Button>
-
-          {course.isPremium && !user?.isPremium && (
-            <Link to='/premium'>
-              <Button
-                size='sm'
-                className='bg-amber-500 hover:bg-amber-600 text-amber-950 font-extrabold text-xs h-9 rounded-xl shadow-md flex items-center gap-1'
-              >
-                <Crown className='w-3.5 h-3.5 fill-current' />
-                <span>Nâng Cấp Premium</span>
-              </Button>
-            </Link>
-          )}
-        </div>
-      </div>
+      <CourseHeader
+        course={course}
+        user={user}
+        isSidebarCollapsed={isSidebarCollapsed}
+        setIsSidebarCollapsed={setIsSidebarCollapsed}
+      />
 
       {/* Main split player layout */}
       <div className='flex-1 flex flex-col lg:flex-row overflow-hidden'>
@@ -479,13 +423,21 @@ export const CoursePlayerPage: React.FC = () => {
                 )}
 
                 {playerMode === 'video' && activeLesson?.videoUrl ? (
-                  /* YouTube Embed Video Player */
-                  <iframe
-                    src={getYoutubeEmbedUrl(activeLesson.videoUrl)}
-                    title={activeLesson.title}
-                    className='w-full h-full border-0 absolute inset-0'
-                    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                    allowFullScreen
+                  <ReactPlayer
+                    src={getStandardYoutubeUrl(activeLesson.videoUrl)}
+                    width='100%'
+                    height='100%'
+                    controls
+                    onTimeUpdate={(e) => {
+                      const target = e.currentTarget
+                      if (target.duration > 0) {
+                        const played = target.currentTime / target.duration
+                        if (played >= 0.5 && !hasWatchedEnough) {
+                          setHasWatchedEnough(true)
+                        }
+                      }
+                    }}
+                    style={{ position: 'absolute', top: 0, left: 0 }}
                   />
                 ) : playerMode === 'doc' && activeLesson?.googleDocUrl ? (
                   /* Google Doc Iframe Embed */
@@ -497,12 +449,21 @@ export const CoursePlayerPage: React.FC = () => {
                   />
                 ) : activeLesson?.videoUrl ? (
                   /* YouTube Embed Video Player (Fallback) */
-                  <iframe
-                    src={getYoutubeEmbedUrl(activeLesson.videoUrl)}
-                    title={activeLesson.title}
-                    className='w-full h-full border-0 absolute inset-0'
-                    allow='accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture'
-                    allowFullScreen
+                  <ReactPlayer
+                    src={getStandardYoutubeUrl(activeLesson.videoUrl)}
+                    width='100%'
+                    height='100%'
+                    controls
+                    onTimeUpdate={(e) => {
+                      const target = e.currentTarget
+                      if (target.duration > 0) {
+                        const played = target.currentTime / target.duration
+                        if (played >= 0.5 && !hasWatchedEnough) {
+                          setHasWatchedEnough(true)
+                        }
+                      }
+                    }}
+                    style={{ position: 'absolute', top: 0, left: 0 }}
                   />
                 ) : activeLesson?.googleDocUrl ? (
                   /* Google Doc Iframe Embed (Fallback) */
@@ -543,6 +504,7 @@ export const CoursePlayerPage: React.FC = () => {
                 variant={completedLessons.includes(activeLesson.id) ? 'default' : 'outline'}
                 size='sm'
                 onClick={() => toggleLessonCompletion(activeLesson.id)}
+                disabled={!completedLessons.includes(activeLesson.id) && playerMode === 'video' && !hasWatchedEnough}
                 className={`rounded-xl font-bold text-xs cursor-pointer transition-all duration-300 ${completedLessons.includes(activeLesson.id)
                   ? 'bg-emerald-600 hover:bg-emerald-700 text-white border-emerald-600 hover:text-white shadow-md shadow-emerald-600/10'
                   : 'border-border hover:bg-emerald-500/10 hover:text-emerald-600 hover:border-emerald-500/30'
@@ -551,7 +513,7 @@ export const CoursePlayerPage: React.FC = () => {
                 <CheckCircle2
                   className={`w-4 h-4 mr-1.5 ${completedLessons.includes(activeLesson.id) ? 'fill-white text-emerald-600' : ''}`}
                 />
-                <span>{completedLessons.includes(activeLesson.id) ? 'Đã Hoàn Thành' : 'Đánh Dấu Hoàn Thành'}</span>
+                <span>{completedLessons.includes(activeLesson.id) ? 'Đã Hoàn Thành' : (playerMode === 'video' && !hasWatchedEnough ? 'Xem 50% Video để Hoàn Thành' : 'Đánh Dấu Hoàn Thành')}</span>
               </Button>
             )}
 
@@ -562,7 +524,12 @@ export const CoursePlayerPage: React.FC = () => {
               variant='outline'
               size='sm'
               onClick={() => navigateLesson('next')}
-              disabled={activeIndex >= flatLessons.length - 1}
+              disabled={
+                activeIndex >= flatLessons.length - 1 ||
+                (activeIndex >= 0 &&
+                  activeIndex < flatLessons.length - 1 &&
+                  isLessonSequentiallyLocked(flatLessons[activeIndex + 1].lesson.id))
+              }
               className='rounded-xl border-border font-bold text-xs cursor-pointer'
             >
               Bài tiếp theo <ArrowRight className='w-4 h-4 ml-1.5' />
@@ -570,213 +537,31 @@ export const CoursePlayerPage: React.FC = () => {
           </div>
 
           {/* Tabs header: Content / Info / Notes */}
-          <div className='flex gap-2 border-b border-border pb-px overflow-x-auto scrollbar-none'>
-            <button
-              onClick={() => setActiveTab('video')}
-              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${activeTab === 'video'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-            >
-              <span className='flex items-center gap-1.5'>
-                <FileText className='w-4 h-4' /> Nội Dung Bài Học
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab('notes')}
-              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${activeTab === 'notes'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-            >
-              <span className='flex items-center gap-1.5'>
-                <Clipboard className='w-4 h-4' /> Sổ Tay Ghi Chú
-              </span>
-            </button>
-            <button
-              onClick={() => setActiveTab('info')}
-              className={`pb-3 text-sm font-extrabold px-1 transition-all border-b-2 cursor-pointer whitespace-nowrap ${activeTab === 'info'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-            >
-              <span className='flex items-center gap-1.5'>
-                <HelpCircle className='w-4 h-4' /> Mô Tả Khoá Học
-              </span>
-            </button>
-          </div>
-
-          {/* Tab Body */}
-          <div className='bg-card/45 p-6 rounded-2xl border border-border/70 backdrop-blur-xs flex-1'>
-            {activeTab === 'video' ? (
-              <div>
-                <h2 className='text-lg font-black text-foreground font-heading'>
-                  {activeLesson?.title || 'Chọn bài học để bắt đầu'}
-                </h2>
-                <div className='text-sm font-medium leading-relaxed text-muted-foreground mt-4 space-y-3'>
-                  {isLocked ? (
-                    <p className='text-amber-500 bg-amber-500/10 border border-amber-500/20 p-4 rounded-xl text-xs font-semibold'>
-                      🔒 Vui lòng nâng cấp Premium để đọc nội dung lý thuyết chi tiết của bài học này!
-                    </p>
-                  ) : activeLesson?.content ? (
-                    <div
-                      className='prose prose-sm dark:prose-invert max-w-none font-sans'
-                      dangerouslySetInnerHTML={{ __html: activeLesson.content }}
-                    />
-                  ) : (
-                    <p className='italic text-xs text-muted-foreground'>Bài học này chưa có tài liệu đính kèm.</p>
-                  )}
-                </div>
-              </div>
-            ) : activeTab === 'notes' && activeLesson ? (
-              <div className='space-y-4'>
-                <div className='flex items-center justify-between'>
-                  <h3 className='text-sm font-extrabold text-foreground flex items-center gap-1.5 leading-none'>
-                    <Clipboard className='w-4 h-4 text-indigo-500' /> Ghi chú học tập
-                  </h3>
-                  <Button
-                    variant='outline'
-                    size='sm'
-                    onClick={downloadNotes}
-                    disabled={!notesText.trim()}
-                    className='rounded-xl text-[10px] h-7 px-3.5 font-bold border-border/80 hover:bg-indigo-500/10 hover:text-indigo-500 cursor-pointer'
-                  >
-                    Tải File Ghi Chú (.txt)
-                  </Button>
-                </div>
-                <textarea
-                  value={notesText}
-                  onChange={(e) => handleSaveNotes(e.target.value)}
-                  placeholder='Ghi nhanh công thức, từ vựng hoặc kiến thức cốt lõi của bài học này tại đây... Hệ thống sẽ tự động lưu lại cho bạn!'
-                  className='w-full h-40 rounded-2xl bg-background/50 border border-border/80 p-3.5 text-xs font-semibold leading-relaxed focus:outline-none focus:ring-1 focus:ring-indigo-500 placeholder-muted-foreground/60 resize-none shadow-inner'
-                />
-                <div className='text-[10px] font-semibold text-muted-foreground flex items-center gap-1.5'>
-                  <span className='relative flex h-1.5 w-1.5'>
-                    <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75'></span>
-                    <span className='relative inline-flex rounded-full h-1.5 w-1.5 bg-emerald-500'></span>
-                  </span>
-                  <span>Đã tự động lưu ghi chú</span>
-                </div>
-              </div>
-            ) : (
-              <div>
-                <h3 className='text-base font-bold text-foreground'>Về Khoá Học</h3>
-                <p className='text-sm font-semibold text-muted-foreground leading-relaxed mt-3'>
-                  {course.description || 'Chưa có mô tả chi tiết cho khoá học này.'}
-                </p>
-              </div>
-            )}
-          </div>
+          <CourseTabArea
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            activeLesson={activeLesson}
+            course={course}
+            isLocked={isLocked}
+            notesText={notesText}
+            handleSaveNotes={handleSaveNotes}
+            downloadNotes={downloadNotes}
+          />
         </div>
 
         {/* Right Side: Syllabus Navigation Sidebar */}
         {!isSidebarCollapsed && (
-          <div className='w-full lg:w-[340px] border-t lg:border-t-0 lg:border-l border-border bg-card flex flex-col h-full transition-all duration-300 animate-in slide-in-from-right'>
-            <div className='p-4 border-b border-border bg-card/65 backdrop-blur-xs'>
-              <h3 className='text-xs font-extrabold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5'>
-                <BookOpen className='w-4 h-4 text-primary' /> Giáo trình khoá học
-              </h3>
-
-              {/* Elegant Progress Bar */}
-              {flatLessons.length > 0 && (
-                <div className='mt-3 bg-muted/40 rounded-xl p-3 border border-border/50'>
-                  <div className='flex items-center justify-between text-[10px] font-bold text-muted-foreground mb-1.5'>
-                    <span>Tiến độ học tập</span>
-                    <span className='text-primary font-black'>
-                      {Math.round((completedLessons.length / flatLessons.length) * 100)}% ({completedLessons.length}/
-                      {flatLessons.length})
-                    </span>
-                  </div>
-                  <div className='w-full h-1.5 bg-muted dark:bg-neutral-800 rounded-full overflow-hidden'>
-                    <div
-                      className='h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-500 ease-out rounded-full'
-                      style={{ width: `${(completedLessons.length / flatLessons.length) * 100}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            <div className='flex-1 overflow-y-auto divide-y divide-border'>
-              {course.chapters.map((ch, chIdx) => {
-                const isExpanded = !!expandedChapters[ch.id]
-                return (
-                  <div key={ch.id} className='bg-card/30'>
-                    {/* Chapter Header */}
-                    <button
-                      onClick={() => toggleChapter(ch.id)}
-                      className='w-full flex items-center justify-between p-4 hover:bg-muted/30 transition-colors cursor-pointer text-left'
-                    >
-                      <div className='flex-1 min-w-0 pr-2'>
-                        <p className='text-[10px] font-black text-primary uppercase tracking-wider'>
-                          Chương {chIdx + 1}
-                        </p>
-                        <h4 className='text-xs font-extrabold text-foreground truncate mt-0.5 leading-tight'>
-                          {ch.title}
-                        </h4>
-                      </div>
-                      {isExpanded ? (
-                        <ChevronDown className='w-4 h-4 text-muted-foreground flex-shrink-0' />
-                      ) : (
-                        <ChevronRight className='w-4 h-4 text-muted-foreground flex-shrink-0' />
-                      )}
-                    </button>
-
-                    {/* Chapter Lessons List */}
-                    {isExpanded && (
-                      <div className='bg-card/5 border-t border-border/50 divide-y divide-border/40'>
-                        {ch.lessons.length === 0 ? (
-                          <div className='p-4 text-center text-[10px] text-muted-foreground font-semibold italic'>
-                            Chương học này trống
-                          </div>
-                        ) : (
-                          ch.lessons.map((lesson) => {
-                            const isActive = activeLesson?.id === lesson.id
-                            const lessonLocked = !lesson.isFree && !hasAccess
-                            const isDone = completedLessons.includes(lesson.id)
-
-                            return (
-                              <button
-                                key={lesson.id}
-                                onClick={() => handleLessonSelect(lesson)}
-                                className={`w-full flex items-center justify-between px-5 py-3.5 transition-all text-left cursor-pointer ${isActive
-                                  ? 'bg-primary/10 border-l-2 border-primary text-primary'
-                                  : 'hover:bg-muted/40 text-muted-foreground hover:text-foreground'
-                                  }`}
-                              >
-                                <div className='flex items-start gap-2.5 flex-1 min-w-0'>
-                                  {lessonLocked ? (
-                                    <Lock className='w-3.5 h-3.5 text-muted-foreground flex-shrink-0 mt-0.5' />
-                                  ) : isDone ? (
-                                    <CheckCircle2 className='w-3.5 h-3.5 text-emerald-500 flex-shrink-0 mt-0.5 fill-emerald-500/10' />
-                                  ) : (
-                                    <Play
-                                      className={`w-3.5 h-3.5 flex-shrink-0 mt-0.5 ${isActive ? 'text-primary animate-pulse' : 'text-muted-foreground/60'}`}
-                                    />
-                                  )}
-                                  <span
-                                    className={`text-xs font-bold leading-tight truncate ${isActive ? 'font-extrabold' : ''} ${isDone ? 'text-muted-foreground/60 line-through decoration-muted-foreground/45 font-medium' : ''}`}
-                                  >
-                                    {lesson.title}
-                                  </span>
-                                </div>
-
-                                {lesson.isFree && !isActive && !isDone && (
-                                  <span className='text-[9px] font-black uppercase text-violet-500 bg-violet-500/10 px-1.5 py-0.2 rounded border border-violet-500/20 leading-none'>
-                                    Học thử
-                                  </span>
-                                )}
-                              </button>
-                            )
-                          })
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )
-              })}
-            </div>
-          </div>
+          <CourseSidebar
+            course={course}
+            expandedChapters={expandedChapters}
+            toggleChapter={toggleChapter}
+            activeLesson={activeLesson}
+            handleLessonSelect={handleLessonSelect}
+            completedLessons={completedLessons}
+            flatLessons={flatLessons}
+            hasAccess={hasAccess}
+            isLessonSequentiallyLocked={isLessonSequentiallyLocked}
+          />
         )}
       </div>
     </div>
