@@ -29,9 +29,10 @@ import { Input } from '@/components/ui/input'
 import { toast } from 'sonner'
 import Loading from '@/components/Layout/Loading'
 import type { IUser } from '@/types/backend'
-import { Edit, Trash2, Plus, Search } from 'lucide-react'
+import { Edit, Trash2, Plus, Search, Activity } from 'lucide-react'
 
 import UserFormModal from '@/components/Dashboard/User/UserFormModal'
+import UserProgressModal from '@/components/Dashboard/User/UserProgressModal'
 
 export default function UserPage() {
   const dispatch = useAppDispatch()
@@ -42,7 +43,9 @@ export default function UserPage() {
   const totalPages = Math.ceil((meta?.total || 0) / limit)
 
   const [openModal, setOpenModal] = useState(false)
+  const [progressModalOpen, setProgressModalOpen] = useState(false)
   const [dataUpdate, setDataUpdate] = useState<IUser | null>(null)
+  const [selectedUser, setSelectedUser] = useState<IUser | null>(null)
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
@@ -76,6 +79,12 @@ export default function UserPage() {
         dataUpdate={dataUpdate}
         setDataUpdate={setDataUpdate}
         onSuccess={loadUsers}
+      />
+
+      <UserProgressModal
+        open={progressModalOpen}
+        setOpen={setProgressModalOpen}
+        user={selectedUser}
       />
 
       <div className='flex justify-between items-center'>
@@ -131,6 +140,18 @@ export default function UserPage() {
                   <TableCell>{user.age}</TableCell>
                   <TableCell className='text-right'>
                     <div className='flex justify-end gap-2'>
+                      <Button
+                        variant='outline'
+                        size='sm'
+                        onClick={() => {
+                          setSelectedUser(user)
+                          setProgressModalOpen(true)
+                        }}
+                        title='Tiến độ học tập'
+                      >
+                        <Activity className='w-4 h-4 text-primary' />
+                      </Button>
+
                       <Button
                         variant='outline'
                         size='sm'

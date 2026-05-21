@@ -34,6 +34,10 @@ export const callGetUserProgress = () => {
   return axios.get('/api/v1/user/progress')
 }
 
+export const callGetUserProgressById = (id: string) => {
+  return axios.get(`/api/v1/user/${id}/progress`)
+}
+
 export const callRefreshToken = () => {
   return axios.post('/api/v1/auth/refresh')
 }
